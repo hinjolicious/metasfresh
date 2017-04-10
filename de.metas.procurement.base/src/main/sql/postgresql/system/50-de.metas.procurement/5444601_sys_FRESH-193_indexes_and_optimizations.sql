@@ -7,5 +7,7 @@ create unique index PMM_PurchaseCandidate_UQ on PMM_PurchaseCandidate (
 	, coalesce(C_Flatrate_DataEntry_ID, 0)
 	-- Date
 	, DatePromised
-);
+)
+where isactive='Y'
+;
 

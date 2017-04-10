@@ -47,9 +47,9 @@ import de.metas.quantity.Quantity;
  * #L%
  */
 
-@RunWith(SpringRunner.class)
-@SpringBootTest()
-@ActiveProfiles("test")
+//@RunWith(SpringRunner.class)
+//@SpringBootTest()
+//@ActiveProfiles("test")
 public class CandidateFactoryTests
 {
 	private final Date now = SystemTime.asDate();

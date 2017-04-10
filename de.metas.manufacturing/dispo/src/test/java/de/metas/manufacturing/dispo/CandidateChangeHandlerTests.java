@@ -46,9 +46,9 @@ import de.metas.quantity.Quantity;
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  * #L%
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest()
-@ActiveProfiles("test")
+//@RunWith(SpringRunner.class)
+//@SpringBootTest()
+//@ActiveProfiles("test")
 public class CandidateChangeHandlerTests
 {
 	final Date now = SystemTime.asDate();
