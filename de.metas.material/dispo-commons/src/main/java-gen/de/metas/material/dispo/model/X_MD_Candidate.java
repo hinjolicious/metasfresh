@@ -16,7 +16,7 @@ public class X_MD_Candidate extends org.compiere.model.PO implements I_MD_Candid
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = -1795260422L;
+	private static final long serialVersionUID = -1252256610L;
 
     /** Standard Constructor */
     public X_MD_Candidate (Properties ctx, int MD_Candidate_ID, String trxName)
@@ -85,6 +85,22 @@ public class X_MD_Candidate extends org.compiere.model.PO implements I_MD_Candid
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
+	}
+
+	/** Set ASI Key.
+		@param ASIKey ASI Key	  */
+	@Override
+	public void setASIKey (java.lang.String ASIKey)
+	{
+		set_ValueNoCheck (COLUMNNAME_ASIKey, ASIKey);
+	}
+
+	/** Get ASI Key.
+		@return ASI Key	  */
+	@Override
+	public java.lang.String getASIKey () 
+	{
+		return (java.lang.String)get_Value(COLUMNNAME_ASIKey);
 	}
 
 	/** Set Plandatum.

@@ -58,6 +58,13 @@ Not sure if this shall be a dedicated service..it depends on how well we will be
 			<scope>test</scope>
 		</dependency>
 
+		<!-- because we need the code for storage-relate ASIs -->
+		<dependency>
+			<groupId>de.metas.storage</groupId>
+			<artifactId>de.metas.storage</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>de.metas.material</groupId>
 			<artifactId>metasfresh-material-event</artifactId>

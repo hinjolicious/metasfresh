@@ -27,6 +27,7 @@ import de.metas.material.dispo.service.event.SupplyProposalEvaluator;
 import de.metas.material.dispo.service.event.SupplyProposalEvaluator.SupplyProposal;
 import de.metas.material.dispo.CandidateRepository;
 import de.metas.material.dispo.CandidateService;
+import de.metas.material.event.MaterialDescriptor;
 import de.metas.material.event.MaterialEventService;
 import mockit.Mocked;
 
@@ -185,11 +186,15 @@ public class SupplyProposalEvaluatorTests
 		final Candidate supplyCandidate = Candidate.builder()
 				.clientId(org.getAD_Client_ID())
 				.orgId(org.getAD_Org_ID())
-				.date(t3)
-				.productId(3)
-				.quantity(BigDecimal.TEN)
+				.descr(MaterialDescriptor.builder()
+						.date(t3)
+						.productId(3)
+						.asiKey("asiKey")
+						.attributeSetInstanceId(4)
+						.qty(BigDecimal.TEN)
+						.warehouseId(SUPPLY_WAREHOUSE_ID)
+						.build())
 				.type(Type.SUPPLY)
-				.warehouseId(SUPPLY_WAREHOUSE_ID)
 				.build();
 
 		final Candidate supplyCandidateWithId = candidateRepository.addOrUpdate(supplyCandidate);
@@ -197,12 +202,16 @@ public class SupplyProposalEvaluatorTests
 		final Candidate demandCandidate = Candidate.builder()
 				.clientId(org.getAD_Client_ID())
 				.orgId(org.getAD_Org_ID())
-				.date(t2)
 				.parentId(supplyCandidateWithId.getId())
-				.productId(3)
-				.quantity(BigDecimal.TEN)
+				.descr(MaterialDescriptor.builder()
+						.date(t2)
+						.productId(3)
+						.asiKey("asiKey")
+						.attributeSetInstanceId(4)
+						.qty(BigDecimal.TEN)
+						.warehouseId(DEMAND_WAREHOUSE_ID)
+						.build())
 				.type(Type.DEMAND)
-				.warehouseId(DEMAND_WAREHOUSE_ID)
 				.build();
 
 		candidateRepository.addOrUpdate(demandCandidate);

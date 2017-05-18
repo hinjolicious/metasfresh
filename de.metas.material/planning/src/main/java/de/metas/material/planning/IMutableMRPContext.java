@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.compiere.model.I_AD_Org;
+import org.compiere.model.I_M_AttributeSetInstance;
 import org.compiere.model.I_M_Product;
 import org.compiere.model.I_M_Warehouse;
 import org.compiere.model.I_S_Resource;
@@ -74,6 +75,14 @@ public interface IMutableMRPContext extends IMaterialPlanningContext
 	int getM_Product_ID();
 
 	public void setM_Product(final I_M_Product product);
+
+	/**
+	 * Creates creates and sets a "storage relevant" copy of the given {@code asi} and sets it into this instance.
+	 * Also see {@link de.metas.storage.StorageUtil#mkStorageRelevantASI(I_M_AttributeSetInstance)} and {@link #getStorageRelevantASI()}.
+	 * 
+	 * @param asi may be {@code null}. In that case {@link #getStorageRelevantASI()} will also return {@code null}.
+	 */
+	void setM_AttributeSetInstance(I_M_AttributeSetInstance asi);
 
 	@Override
 	I_PP_Product_Planning getProductPlanning();

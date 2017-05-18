@@ -98,6 +98,29 @@ public interface I_MD_Candidate
     public static final String COLUMNNAME_AD_Table_ID = "AD_Table_ID";
 
 	/**
+	 * Set ASI Key.
+	 *
+	 * <br>Type: String
+	 * <br>Mandatory: false
+	 * <br>Virtual Column: false
+	 */
+	public void setASIKey (java.lang.String ASIKey);
+
+	/**
+	 * Get ASI Key.
+	 *
+	 * <br>Type: String
+	 * <br>Mandatory: false
+	 * <br>Virtual Column: false
+	 */
+	public java.lang.String getASIKey();
+
+    /** Column definition for ASIKey */
+    public static final org.adempiere.model.ModelColumn<I_MD_Candidate, Object> COLUMN_ASIKey = new org.adempiere.model.ModelColumn<I_MD_Candidate, Object>(I_MD_Candidate.class, "ASIKey", null);
+    /** Column name ASIKey */
+    public static final String COLUMNNAME_ASIKey = "ASIKey";
+
+	/**
 	 * Get Erstellt.
 	 * Datum, an dem dieser Eintrag erstellt wurde
 	 *

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.adempiere.ad.trx.api.ITrx;
 import org.adempiere.mm.attributes.api.IAttributeSetInstanceAware;
 import org.adempiere.mm.attributes.api.IAttributeSetInstanceAwareFactoryService;
 import org.adempiere.model.InterfaceWrapperHelper;
@@ -22,7 +21,6 @@ import org.compiere.model.I_C_OrderLine;
 import org.compiere.model.I_M_InOutLine;
 import org.compiere.model.I_M_MovementLine;
 import org.compiere.model.I_M_Transaction;
-import org.compiere.util.DB;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
@@ -36,6 +34,7 @@ import de.metas.inoutcandidate.api.IShipmentScheduleEffectiveBL;
 import de.metas.inoutcandidate.api.IShipmentSchedulePA;
 import de.metas.inoutcandidate.model.I_M_ShipmentSchedule;
 import de.metas.procurement.base.model.I_PMM_PurchaseCandidate;
+import de.metas.storage.StorageUtil;
 
 /*
  * #%L
@@ -382,10 +381,7 @@ public class MRPProductInfoSelectorFactory implements IMRPProductInfoSelectorFac
 		{
 			if (asiKey == null)
 			{
-				final int attributeSetInstanceID = getM_AttributeSetInstance_ID();
-				asiKey = DB.getSQLValueString(ITrx.TRXNAME_None,
-						"SELECT GenerateHUStorageASIKey(?, '')",               // important to get an empty string instead of NULL
-						attributeSetInstanceID);
+				asiKey = StorageUtil.getASIKey(getM_AttributeSetInstance_ID());
 			}
 			return asiKey;
 		}

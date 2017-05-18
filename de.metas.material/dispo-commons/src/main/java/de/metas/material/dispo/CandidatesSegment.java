@@ -7,6 +7,7 @@ import org.adempiere.util.Check;
 import org.adempiere.util.lang.impl.TableRecordReference;
 
 import de.metas.material.dispo.Candidate.Type;
+import de.metas.material.event.MaterialDescriptor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -67,6 +68,8 @@ public class CandidatesSegment
 
 	private final Integer productId;
 
+	private final String asiKey;
+	
 	private final Integer warehouseId;
 
 	@NonNull
@@ -99,17 +102,19 @@ public class CandidatesSegment
 	 */
 	public boolean matches(final Candidate candidate)
 	{
+		final MaterialDescriptor materialDescriptor = candidate.getDescr();
+		
 		final boolean dateMatches;
 		switch (dateOperator)
 		{
 			case after:
-				dateMatches = candidate.getDate().getTime() > getDate().getTime();
+				dateMatches = materialDescriptor.getDate().getTime() > getDate().getTime();
 				break;
 			case from:
-				dateMatches = candidate.getDate().getTime() >= getDate().getTime();
+				dateMatches = materialDescriptor.getDate().getTime() >= getDate().getTime();
 				break;
 			case until:
-				dateMatches = candidate.getDate().getTime() <= getDate().getTime();
+				dateMatches = materialDescriptor.getDate().getTime() <= getDate().getTime();
 				break;
 			default:
 				Check.errorIf(true, "Unexpected date operator={}; this={}", dateOperator, this);
@@ -121,7 +126,7 @@ public class CandidatesSegment
 			return false;
 		}
 
-		if (getProductId() != null && !Objects.equals(getProductId(), candidate.getProductId()))
+		if (getProductId() != null && !Objects.equals(getProductId(), materialDescriptor.getProductId()))
 		{
 			return false;
 		}
@@ -136,7 +141,7 @@ public class CandidatesSegment
 			return false;
 		}
 
-		if (getWarehouseId() != null && !Objects.equals(getWarehouseId(), candidate.getWarehouseId()))
+		if (getWarehouseId() != null && !Objects.equals(getWarehouseId(), materialDescriptor.getWarehouseId()))
 		{
 			return false;
 		}

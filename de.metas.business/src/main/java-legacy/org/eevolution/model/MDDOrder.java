@@ -24,8 +24,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.slf4j.Logger;
-import de.metas.logging.LogManager;
 
 import org.adempiere.ad.trx.api.ITrx;
 import org.adempiere.exceptions.AdempiereException;
@@ -161,8 +159,8 @@ public class MDDOrder extends X_DD_Order implements DocAction
 			setDatePromised(new Timestamp(System.currentTimeMillis()));
 			setDateOrdered(new Timestamp(System.currentTimeMillis()));
 
-			setFreightAmt(Env.ZERO);
-			setChargeAmt(Env.ZERO);
+			setFreightAmt(BigDecimal.ZERO);
+			setChargeAmt(BigDecimal.ZERO);
 
 		}
 	}	// MDDOrder
@@ -359,8 +357,8 @@ public class MDDOrder extends X_DD_Order implements DocAction
 				// line.setS_ResourceAssignment_ID(0);
 			}
 
-			line.setQtyDelivered(Env.ZERO);
-			line.setQtyReserved(Env.ZERO);
+			line.setQtyDelivered(BigDecimal.ZERO);
+			line.setQtyReserved(BigDecimal.ZERO);
 			line.setDateDelivered(null);
 
 			line.setProcessed(false);
@@ -825,8 +823,8 @@ public class MDDOrder extends X_DD_Order implements DocAction
 	 */
 	private void reserveStock(MDDOrderLine[] lines)
 	{
-		BigDecimal Volume = Env.ZERO;
-		BigDecimal Weight = Env.ZERO;
+		BigDecimal Volume = BigDecimal.ZERO;
+		BigDecimal Weight = BigDecimal.ZERO;
 
 		// Always check and (un) Reserve Inventory
 		for (int i = 0; i < lines.length; i++)
@@ -862,7 +860,7 @@ public class MDDOrder extends X_DD_Order implements DocAction
 					if (!MStorage.add(getCtx(), locator_from.getM_Warehouse_ID(), locator_from.getM_Locator_ID(),
 							line.getM_Product_ID(),
 							line.getM_AttributeSetInstance_ID(), line.getM_AttributeSetInstance_ID(),
-							Env.ZERO, reserved_ordered, Env.ZERO, get_TrxName()))
+							BigDecimal.ZERO, reserved_ordered, BigDecimal.ZERO, get_TrxName()))
 					{
 						throw new AdempiereException();
 					}
@@ -870,7 +868,7 @@ public class MDDOrder extends X_DD_Order implements DocAction
 					if (!MStorage.add(getCtx(), locator_to.getM_Warehouse_ID(), locator_to.getM_Locator_ID(),
 							line.getM_Product_ID(),
 							line.getM_AttributeSetInstanceTo_ID(), line.getM_AttributeSetInstance_ID(),
-							Env.ZERO, Env.ZERO, reserved_ordered, get_TrxName()))
+							BigDecimal.ZERO, BigDecimal.ZERO, reserved_ordered, get_TrxName()))
 					{
 						throw new AdempiereException();
 					}

@@ -37,9 +37,12 @@ public class DDOrderLine
 
 	@NonNull
 	private final Integer productId;
-
 	
-	private final int attributeSetInstanceId;;
+	@NonNull
+	private final Integer attributeSetInstanceId;
+	
+	@NonNull
+	private final String asiKey;
 	
 	@NonNull
 	private final BigDecimal qty;

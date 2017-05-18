@@ -78,6 +78,7 @@ public class LiberoMRPContextFactory implements ILiberoMRPContextFactory
 		//
 		// Product
 		mrpContext.setM_Product(mrpDemand.getM_Product());
+		mrpContext.setM_AttributeSetInstance(mrpDemand.getM_AttributeSetInstance());
 
 		//
 		// Configure context for our given PP_MRP record

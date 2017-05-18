@@ -19,6 +19,7 @@ import de.metas.material.event.pporder.PPOrder;
 import de.metas.material.event.pporder.PPOrder.PPOrderBuilder;
 import de.metas.material.event.pporder.PPOrderLine;
 import de.metas.material.planning.pporder.PPOrderUtil;
+import de.metas.storage.StorageUtil;
 
 /**
  * A dedicated model interceptor whose job it is to fire events on the {@link MaterialEventService}.<br>
@@ -48,6 +49,8 @@ public class PP_OrderFireMaterialEvent
 				.plantId(ppOrder.getS_Resource_ID())
 				.ppOrderId(ppOrder.getPP_Order_ID())
 				.productId(ppOrder.getM_Product_ID())
+				.attributeSetInstanceId(ppOrder.getM_AttributeSetInstance_ID())
+				.asiKey(StorageUtil.getASIKey(ppOrder.getM_AttributeSetInstance_ID()))
 				.productPlanningId(ppOrder.getPP_Product_Planning_ID())
 				.quantity(ppOrder.getQtyOrdered())
 				.uomId(ppOrder.getC_UOM_ID())
@@ -63,6 +66,8 @@ public class PP_OrderFireMaterialEvent
 					.ppOrderLineId(line.getPP_Order_BOMLine_ID())
 					.productBomLineId(line.getPP_Product_BOMLine_ID())
 					.productId(line.getM_Product_ID())
+					.attributeSetInstanceId(line.getM_AttributeSetInstance_ID())
+					.asiKey(StorageUtil.getASIKey(line.getM_AttributeSetInstance_ID()))
 					.qtyRequired(line.getQtyRequiered())
 					.receipt(PPOrderUtil.isReceipt(line.getComponentType()))
 					.build());

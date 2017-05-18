@@ -95,10 +95,9 @@ public class CandidateChangeHandler
 
 		final Candidate demandCandidateWithId = candidateRepository.addOrUpdate(demandCandidate);
 
-		if (demandCandidateWithId.getQuantity().signum() == 0)
+		if (demandCandidateWithId.getQty().signum() == 0)
 		{
-			// this candidate didn't change anything
-			return demandCandidateWithId;
+			return demandCandidateWithId; // this candidate wouldn't change anything
 		}
 
 		// this is the seqno which the new stock candidate shall get according to the demand candidate
@@ -113,23 +112,24 @@ public class CandidateChangeHandler
 			childStockWithDemand = updateStock(
 					demandCandidateWithId, () ->
 						{
-							// don't check if we might create a new stock candidate, because we know we don't.
-							// Instead we might run into trouble with CandidateRepository.retrieveExact() and multiple matching records.
+							// don't check if we might create a new stock candidate, because we know we don't want to.
+							// If we still tried we might run into trouble with CandidateRepository.retrieveExact() and multiple matching records.
 							// So get the one that we know already exists and just update its quantity
 							final Candidate childStockCandidate = possibleChildStockCandidate.get();
+
 							return candidateRepository.updateQty(
-									childStockCandidate
-											.withQuantity(
-													childStockCandidate.getQuantity().subtract(demandCandidateWithId.getQuantity())));
+									childStockCandidate.withDescr(childStockCandidate.getDescr()
+											.withQty(childStockCandidate.getQty()
+													.subtract(demandCandidateWithId.getQty()))));
 						});
 		}
-
 		else
 		{
 			childStockWithDemand = addOrUpdateStock(
 					demandCandidate
 							.withSeqNo(expectedStockSeqNo)
-							.withQuantity(demandCandidateWithId.getQuantity().negate())
+							.withDescr(demandCandidate.getDescr()
+									.withQty(demandCandidateWithId.getQty().negate()))
 							.withParentId(demandCandidateWithId.getId()));
 		}
 
@@ -148,21 +148,19 @@ public class CandidateChangeHandler
 			demandCandidateToReturn = demandCandidateWithId;
 		}
 
-		if (childStockWithDemand.getQuantity().signum() < 0)
+		if (childStockWithDemand.getQty().signum() < 0)
 		{
 			// there would be no more stock left, so
 			// notify whoever is in charge that we have a demand to balance
 			final int orderLineId = demandCandidate.getDemandDetail() == null ? 0 : demandCandidate.getDemandDetail().getOrderLineId();
 
+			final MaterialDescriptor demandMaterialDescr = demandCandidate.getDescr();
+
 			final MaterialDemandEvent materialDemandEvent = MaterialDemandEvent
 					.builder()
 					.eventDescr(new EventDescr(demandCandidate.getClientId(), demandCandidate.getOrgId()))
-					.descr(MaterialDescriptor.builder()
-							.productId(demandCandidate.getProductId())
-							.date(demandCandidate.getDate())
-							.qty(childStockWithDemand.getQuantity().negate())
-							.warehouseId(demandCandidate.getWarehouseId())
-							.build())
+					.descr(demandMaterialDescr
+							.withQty(demandMaterialDescr.getQty().negate()))
 					.reference(demandCandidate.getReference())
 					.orderLineId(orderLineId)
 					.build();
@@ -189,9 +187,9 @@ public class CandidateChangeHandler
 		// store the supply candidate and get both it's ID and qty-delta
 		final Candidate supplyCandidateDeltaWithId = candidateRepository.addOrUpdate(supplyCandidate);
 
-		if (supplyCandidateDeltaWithId.getQuantity().signum() == 0)
+		if (supplyCandidateDeltaWithId.getQty().signum() == 0)
 		{
-			return supplyCandidateDeltaWithId; // nothing to do
+			return supplyCandidateDeltaWithId; // this candidate wouldn't change anything
 		}
 
 		final Candidate parentStockCandidateWithId;
@@ -205,8 +203,8 @@ public class CandidateChangeHandler
 							// don't check if we might create a new stock candidate, because we know we don't. Get the one that already exists and just update its quantity
 							final Candidate stockCandidate = candidateRepository.retrieve(supplyCandidateDeltaWithId.getParentId());
 							return candidateRepository.updateQty(
-									stockCandidate.withQuantity(
-											stockCandidate.getQuantity().add(supplyCandidateDeltaWithId.getQuantity())));
+									stockCandidate.withQty(
+											stockCandidate.getQty().add(supplyCandidateDeltaWithId.getQty())));
 						});
 		}
 		else
@@ -254,17 +252,17 @@ public class CandidateChangeHandler
 		if (previousCandidate.isPresent())
 		{
 			// there was already a persisted candidate. This means that the addOrReplace already did the work of providing our delta between the old and the current status.
-			delta = persistedStockCandidate.getQuantity();
+			delta = persistedStockCandidate.getQty();
 		}
 		else
 		{
 			// there was no persisted candidate, so we basically propagate the full qty (positive or negative) of the given candidate upwards
-			delta = relatedCanidateWithDelta.getQuantity();
+			delta = relatedCanidateWithDelta.getQty();
 		}
 		applyDeltaToLaterStockCandidates(
-				relatedCanidateWithDelta.getProductId(),
-				relatedCanidateWithDelta.getWarehouseId(),
-				relatedCanidateWithDelta.getDate(),
+				relatedCanidateWithDelta.getDescr().getProductId(),
+				relatedCanidateWithDelta.getDescr().getWarehouseId(),
+				relatedCanidateWithDelta.getDescr().getDate(),
 				persistedStockCandidate.getGroupId(),
 				delta);
 		return persistedStockCandidate;
@@ -332,9 +330,9 @@ public class CandidateChangeHandler
 		final List<Candidate> candidatesToUpdate = candidateRepository.retrieveMatches(segment);
 		for (final Candidate candidate : candidatesToUpdate)
 		{
-			final BigDecimal newQty = candidate.getQuantity().add(delta);
+			final BigDecimal newQty = candidate.getQty().add(delta);
 			candidateRepository.addOrUpdate(candidate
-					.withQuantity(newQty)
+					.withQty(newQty)
 					.withGroupId(groupId));
 		}
 	}

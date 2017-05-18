@@ -15,8 +15,8 @@ import org.adempiere.util.Check;
 import org.adempiere.util.Services;
 import org.adempiere.warehouse.api.IWarehouseBL;
 import org.compiere.model.I_AD_Org;
+import org.compiere.model.I_M_AttributeSetInstance;
 import org.compiere.model.I_M_Locator;
-import org.compiere.model.I_M_Product;
 import org.compiere.model.I_M_Warehouse;
 import org.compiere.model.I_S_Resource;
 import org.compiere.util.Env;
@@ -35,6 +35,7 @@ import de.metas.material.planning.IMRPNotesCollector;
 import de.metas.material.planning.IMaterialPlanningContext;
 import de.metas.material.planning.IMaterialRequest;
 import de.metas.material.planning.exception.MrpException;
+import de.metas.storage.StorageUtil;
 
 /*
  * #%L
@@ -117,7 +118,7 @@ public class DDOrderPojoSupplier
 		final Timestamp supplyDateFinishSchedule = TimeUtil.asTimestamp(request.getDemandDate());
 
 		int M_Shipper_ID = -1;
-		// I_DD_Order order = null;
+
 		DDOrder.DDOrderBuilder orderBuilder = null;
 
 		BigDecimal qtyToSupplyRemaining = request.getQtyToSupply();
@@ -189,7 +190,7 @@ public class DDOrderPojoSupplier
 					//
 					continue;
 				}
-				
+
 				//
 				// Try found some DD_Order with Shipper , Business Partner and Doc Status = Draft
 				// Consolidate the demand in a single order for each Shipper , Business Partner , DemandDateStartSchedule
@@ -294,13 +295,16 @@ public class DDOrderPojoSupplier
 			final Timestamp supplyDateFinishSchedule,
 			final IMaterialRequest request)
 	{
-		final I_M_Product product = mrpContext.getM_Product();
-
 		final int durationDays = DDOrderUtil.calculateDurationDays(mrpContext.getProductPlanning(), networkLine);
+
+		final I_M_AttributeSetInstance asi = mrpContext.getStorageRelevantASI();
+		final String asiKey = StorageUtil.getASIKey(asi.getM_AttributeSetInstance_ID());
 
 		final DDOrderLine ddOrderline = DDOrderLine.builder()
 				.salesOrderLineId(request.getMRPDemandOrderLineSOId())
-				.productId(product.getM_Product_ID())
+				.productId(mrpContext.getM_Product_ID())
+				.attributeSetInstanceId(asi.getM_AttributeSetInstance_ID())
+				.asiKey(asiKey)
 				.qty(qtyToMove)
 				.networkDistributionLineId(networkLine.getDD_NetworkDistributionLine_ID())
 				.durationDays(durationDays)

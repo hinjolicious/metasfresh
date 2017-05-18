@@ -53,6 +53,7 @@ public class MRPContextFactory implements IMRPContextFactory
 		mrpContextNew.setAD_Org(context.getAD_Org());
 		mrpContextNew.setRequireDRP(context.isRequireDRP());
 		mrpContextNew.setM_Product(context.getM_Product());
+		mrpContextNew.setM_AttributeSetInstance(context.getStorageRelevantASI());
 		// mrpContextNew.setProductPlanning(context.getProductPlanning()); // needs to be copied, see below
 
 		mrpContextNew.setMRPDemands(context.getMRPDemands());
@@ -121,6 +122,7 @@ public class MRPContextFactory implements IMRPContextFactory
 		final I_M_Product product = mrpSegment.getM_Product();
 		// null is also OK
 		mrpContext.setM_Product(product);
+		
 
 		return mrpContext;
 	}

@@ -13,6 +13,7 @@ import org.adempiere.util.PlainStringLoggable;
 import org.adempiere.util.Services;
 import org.adempiere.util.lang.IAutoCloseable;
 import org.compiere.model.I_AD_Org;
+import org.compiere.model.I_M_AttributeSetInstance;
 import org.compiere.model.I_M_Product;
 import org.compiere.model.I_M_Warehouse;
 import org.compiere.model.I_S_Resource;
@@ -195,7 +196,6 @@ public class MaterialDemandListener implements MaterialEventListener
 
 		final I_AD_Org org = InterfaceWrapperHelper.create(ctx, eventDescr.getOrgId(), I_AD_Org.class, trxName);
 		final I_M_Warehouse warehouse = InterfaceWrapperHelper.create(ctx, materialDescr.getWarehouseId(), I_M_Warehouse.class, trxName);
-		final I_M_Product product = InterfaceWrapperHelper.create(ctx, materialDescr.getProductId(), I_M_Product.class, trxName);
 
 		final IProductPlanningDAO productPlanningDAO = Services.get(IProductPlanningDAO.class);
 
@@ -214,7 +214,12 @@ public class MaterialDemandListener implements MaterialEventListener
 		final IMRPContextFactory mrpContextFactory = Services.get(IMRPContextFactory.class);
 		final IMutableMRPContext mrpContext = mrpContextFactory.createInitialMRPContext();
 
+		final I_M_Product product = InterfaceWrapperHelper.create(ctx, materialDescr.getProductId(), I_M_Product.class, trxName);
 		mrpContext.setM_Product(product);
+		
+		final I_M_AttributeSetInstance asi = InterfaceWrapperHelper.create(ctx,  materialDescr.getAttributeSetInstanceId(), I_M_AttributeSetInstance.class, trxName);
+		mrpContext.setM_AttributeSetInstance(asi);
+		
 		mrpContext.setM_Warehouse(warehouse);
 		mrpContext.setDate(materialDescr.getDate());
 		mrpContext.setCtx(ctx);

@@ -63,7 +63,7 @@ public class CandidateFactory
 				.build());
 
 		final BigDecimal formerQuantity = stock.isPresent()
-				? stock.get().getQuantity()
+				? stock.get().getQty()
 				: BigDecimal.ZERO;
 
 		final Integer groupId = stock.isPresent()
@@ -74,10 +74,10 @@ public class CandidateFactory
 				.type(Type.STOCK)
 				.orgId(candidate.getOrgId())
 				.clientId(candidate.getClientId())
-				.productId(candidate.getProductId())
-				.warehouseId(candidate.getWarehouseId())
-				.date(candidate.getDate())
-				.quantity(formerQuantity.add(candidate.getQuantity()))
+				
+				.descr(candidate.getDescr()
+						.withQty(formerQuantity.add(candidate.getQty())))
+
 				.reference(candidate.getReference())
 				.parentId(candidate.getParentId())
 				.seqNo(candidate.getSeqNo())

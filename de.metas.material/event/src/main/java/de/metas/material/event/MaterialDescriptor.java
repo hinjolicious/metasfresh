@@ -42,9 +42,30 @@ public class MaterialDescriptor
 	@NonNull
 	private final Integer productId;
 
+	/**
+	 * A string representation of those ASI parts that are storage relevant.
+	 * Product and asiKey together are used to decide if e.g. a given demand can be balanced with a given stock.
+	 */
+	@NonNull
+	private final String asiKey;
+
+	/**
+	 * The attribute set instance ID is there to be rendered nicely in the client. Apart from that, it doesn't really matter in materia dispo.
+	 */
+	@NonNull
+	private final Integer attributeSetInstanceId;
+
+	/**
+	 * The meaning of this field might differ.
+	 * It can be the absolute stock quantity at a given time (if the type is "stock") or it can be a supply, demand or stock related <b>delta</b>,
+	 * i.e. one addition or removal that occurs at a particular time.
+	 */
 	@NonNull
 	private final BigDecimal qty;
 
+	/**
+	 * The projected date at which we expect this descriptor's {@link #getQuantity()}.
+	 */
 	@NonNull
 	private final Date date;
 }

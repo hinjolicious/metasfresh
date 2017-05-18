@@ -11,6 +11,7 @@ import de.metas.material.dispo.CandidateService;
 import de.metas.material.dispo.DemandCandidateDetail;
 import de.metas.material.dispo.ProductionCandidateDetail;
 import de.metas.material.event.EventDescr;
+import de.metas.material.event.MaterialDescriptor;
 import de.metas.material.event.ProductionPlanEvent;
 import de.metas.material.event.pporder.PPOrder;
 import de.metas.material.event.pporder.PPOrderLine;
@@ -78,12 +79,17 @@ public class ProductionPlanEventHandler
 				.subType(SubType.PRODUCTION)
 				.status(candidateStatus)
 
-				.date(ppOrder.getDatePromised())
+				.descr(MaterialDescriptor.builder()
+						.date(ppOrder.getDatePromised())
+						.productId(ppOrder.getProductId())
+						.asiKey(ppOrder.getAsiKey())
+						.attributeSetInstanceId(ppOrder.getAttributeSetInstanceId())
+						.qty(ppOrder.getQuantity())
+						.warehouseId(ppOrder.getWarehouseId())
+						.build())
+
 				.clientId(eventDescr.getClientId())
 				.orgId(eventDescr.getOrgId())
-				.productId(ppOrder.getProductId())
-				.quantity(ppOrder.getQuantity())
-				.warehouseId(ppOrder.getWarehouseId())
 				.reference(event.getReference())
 				.productionDetail(ProductionCandidateDetail.builder()
 						.plantId(ppOrder.getPlantId())
@@ -109,15 +115,18 @@ public class ProductionPlanEventHandler
 					.groupId(candidateWithGroupId.getGroupId())
 					.seqNo(candidateWithGroupId.getSeqNo() + 1)
 
-					.date(ppOrderLine.isReceipt() ? ppOrder.getDatePromised() : ppOrder.getDateStartSchedule())
-
 					.clientId(eventDescr.getClientId())
 					.orgId(eventDescr.getOrgId())
 
-					.productId(ppOrderLine.getProductId())
-					.attributeSetInstanceId(ppOrderLine.getAttributeSetInstanceId())
-					.quantity(ppOrderLine.getQtyRequired())
-					.warehouseId(ppOrder.getWarehouseId())
+					.descr(MaterialDescriptor.builder()
+							.date(ppOrderLine.isReceipt() ? ppOrder.getDatePromised() : ppOrder.getDateStartSchedule())
+							.productId(ppOrderLine.getProductId())
+							.asiKey(ppOrderLine.getAsiKey())
+							.attributeSetInstanceId(ppOrderLine.getAttributeSetInstanceId())
+							.qty(ppOrderLine.getQtyRequired())
+							.warehouseId(ppOrder.getWarehouseId())
+							.build())
+
 					.reference(event.getReference())
 					.productionDetail(ProductionCandidateDetail.builder()
 							.plantId(ppOrder.getPlantId())

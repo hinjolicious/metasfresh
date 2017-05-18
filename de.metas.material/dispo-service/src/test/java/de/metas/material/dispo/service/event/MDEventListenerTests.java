@@ -94,6 +94,8 @@ public class MDEventListenerTests
 	@Mocked
 	private MaterialEventService materialEventService;
 
+	private int attributeSetInstanceId = 50;
+
 	@Before
 	public void init()
 	{
@@ -130,6 +132,8 @@ public class MDEventListenerTests
 				.materialDescr(MaterialDescriptor.builder()
 						.date(t1)
 						.productId(productId)
+						.asiKey("asiKey")
+						.attributeSetInstanceId(20)
 						.qty(BigDecimal.TEN)
 						.warehouseId(toWarehouseId)
 						.build())
@@ -176,6 +180,8 @@ public class MDEventListenerTests
 						.datePromised(t1)
 						.line(DDOrderLine.builder()
 								.productId(productId)
+								.asiKey("asiKey")
+								.attributeSetInstanceId(attributeSetInstanceId)
 								.qty(BigDecimal.TEN)
 								.durationDays(0)
 								.networkDistributionLineId(900)

@@ -100,7 +100,7 @@ public class CandidateService
 	{
 		Preconditions.checkArgument(!group.isEmpty(), "Param 'group' is an empty list");
 
-		PPOrderBuilder ppOrderBuilder = PPOrder.builder();
+		final PPOrderBuilder ppOrderBuilder = PPOrder.builder();
 
 		for (final Candidate groupMember : group)
 		{
@@ -119,7 +119,9 @@ public class CandidateService
 						.orgId(groupMember.getOrgId())
 						.plantId(prodDetail.getPlantId())
 						.productId(groupMember.getProductId())
-						.quantity(groupMember.getQuantity())
+						.attributeSetInstanceId(groupMember.getAttributeSetInstanceId())
+						.asiKey(groupMember.getAsiKey())
+						.quantity(groupMember.getQty())
 						.uomId(prodDetail.getUomId())
 						.warehouseId(groupMember.getWarehouseId());
 			}
@@ -140,7 +142,9 @@ public class CandidateService
 								.description(prodDetail.getDescription())
 								.productBomLineId(prodDetail.getProductBomLineId())
 								.productId(groupMember.getProductId())
-								.qtyRequired(groupMember.getQuantity())
+								.attributeSetInstanceId(groupMember.getAttributeSetInstanceId())
+								.asiKey(groupMember.getAsiKey())
+								.qtyRequired(groupMember.getQty())
 								.productBomLineId(prodDetail.getProductBomLineId())
 								.receipt(receipt)
 								.build());
@@ -188,7 +192,9 @@ public class CandidateService
 
 			ddOrderLineBuilder
 					.productId(groupMember.getProductId())
-					.qty(groupMember.getQuantity());
+					.asiKey(groupMember.getAsiKey())
+					.attributeSetInstanceId(groupMember.getAttributeSetInstanceId())
+					.qty(groupMember.getQty());
 
 			if (groupMember.getDemandDetail() != null && groupMember.getDemandDetail().getOrderLineId() > 0)
 			{

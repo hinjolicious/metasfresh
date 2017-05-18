@@ -87,6 +87,8 @@ public class DistributionPlanEventHandlerTests
 
 	public static final int productId = 40;
 
+	private static final int attributeSetInstanceId= 45;
+	
 	public static final int rawProduct1Id = 50;
 
 	public static final int rawProduct2Id = 55;
@@ -147,6 +149,8 @@ public class DistributionPlanEventHandlerTests
 						.shipperId(shipperId)
 						.line(DDOrderLine.builder()
 								.productId(productId)
+								.asiKey("asiKey")
+								.attributeSetInstanceId(attributeSetInstanceId)
 								.qty(BigDecimal.TEN)
 								.durationDays(1)
 								.networkDistributionLineId(networkDistributionLineId)
@@ -250,6 +254,8 @@ public class DistributionPlanEventHandlerTests
 						.shipperId(shipperId)
 						.line(DDOrderLine.builder()
 								.productId(productId)
+								.asiKey("asiKey")
+								.attributeSetInstanceId(attributeSetInstanceId)
 								.qty(BigDecimal.TEN)
 								.networkDistributionLineId(networkDistributionLineId)
 								.durationDays(1) // => t2 minus 1day = t1 (expected date of the demand candidate)
@@ -275,6 +281,8 @@ public class DistributionPlanEventHandlerTests
 						.shipperId(shipperId)
 						.line(DDOrderLine.builder()
 								.productId(productId)
+								.asiKey("asiKey")
+								.attributeSetInstanceId(attributeSetInstanceId)
 								.qty(BigDecimal.TEN)
 								.durationDays(2) // => t3 minus 2days = t2 (expected date of the demand candidate)
 								.networkDistributionLineId(networkDistributionLineId)

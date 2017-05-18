@@ -19,6 +19,7 @@ import de.metas.material.dispo.service.CandidateChangeHandler;
 import de.metas.material.dispo.service.event.SupplyProposalEvaluator.SupplyProposal;
 import de.metas.material.event.DistributionPlanEvent;
 import de.metas.material.event.EventDescr;
+import de.metas.material.event.MaterialDescriptor;
 import de.metas.material.event.ddorder.DDOrder;
 import de.metas.material.event.ddorder.DDOrderLine;
 import lombok.NonNull;
@@ -105,17 +106,23 @@ public class DistributionPlanEventHandler
 			}
 
 			final EventDescr eventDescr = event.getEventDescr();
-			
+
 			final Candidate supplyCandidate = Candidate.builder()
 					.type(Type.SUPPLY)
 					.status(candidateStatus)
 					.subType(SubType.DISTRIBUTION)
-					.date(ddOrder.getDatePromised())
 					.clientId(eventDescr.getClientId())
 					.orgId(eventDescr.getOrgId())
-					.productId(ddOrderLine.getProductId())
-					.quantity(ddOrderLine.getQty())
-					.warehouseId(event.getToWarehouseId())
+
+					.descr(MaterialDescriptor.builder()
+							.date(ddOrder.getDatePromised())
+							.productId(ddOrderLine.getProductId())
+							.attributeSetInstanceId(ddOrderLine.getAttributeSetInstanceId())
+							.asiKey(ddOrderLine.getAsiKey())
+							.qty(ddOrderLine.getQty())
+							.warehouseId(event.getToWarehouseId())
+							.build())
+
 					.reference(event.getReference())
 					.demandDetail(DemandCandidateDetail.builder()
 							.orderLineId(ddOrderLine.getSalesOrderLineId())
@@ -132,7 +139,7 @@ public class DistributionPlanEventHandler
 					.build();
 
 			final Candidate supplyCandidateWithId = candidateChangeHandler.onCandidateNewOrChange(supplyCandidate);
-			if (supplyCandidateWithId.getQuantity().signum() == 0)
+			if (supplyCandidateWithId.getQty().signum() == 0)
 			{
 				// nothing was added as supply in the destination warehouse, so there is no demand to register either
 				return;
@@ -149,10 +156,11 @@ public class DistributionPlanEventHandler
 					.withSubType(SubType.DISTRIBUTION)
 					.withGroupId(groupId)
 					.withParentId(supplyCandidateWithId.getId())
-					.withQuantity(supplyCandidateWithId.getQuantity()) // what was added as supply in the destination warehouse needs to be registered as demand in the source warehouse
-					.withDate(orderLineStartDate)
-					.withSeqNo(expectedSeqNoForDemandCandidate)
-					.withWarehouseId(event.getFromWarehouseId());
+					.withDescr(supplyCandidate.getDescr()
+							.withDate(orderLineStartDate)
+							.withQty(supplyCandidateWithId.getQty()) // what was added as supply in the destination warehouse needs to be registered as demand in the source warehouse
+							.withWarehouseId(event.getFromWarehouseId()))
+					.withSeqNo(expectedSeqNoForDemandCandidate);
 
 			// this might cause 'candidateChangeHandler' to trigger another event
 			final Candidate demandCandidateWithId = candidateChangeHandler.onCandidateNewOrChange(demandCandidate);

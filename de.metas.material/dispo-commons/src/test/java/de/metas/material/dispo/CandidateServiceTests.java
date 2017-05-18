@@ -19,6 +19,7 @@ import de.metas.material.dispo.ProductionCandidateDetail;
 import de.metas.material.dispo.Candidate.SubType;
 import de.metas.material.dispo.Candidate.Type;
 import de.metas.material.event.DDOrderRequestedEvent;
+import de.metas.material.event.MaterialDescriptor;
 import de.metas.material.event.MaterialEventService;
 import de.metas.material.event.PPOrderRequestedEvent;
 import de.metas.material.event.ddorder.DDOrder;
@@ -56,10 +57,14 @@ public class CandidateServiceTests
 				.orgId(30)
 				.type(Type.SUPPLY)
 				.subType(SubType.PRODUCTION)
-				.productId(300)
-				.warehouseId(400)
-				.date(SystemTime.asDate())
-				.quantity(BigDecimal.valueOf(15))
+				.descr(MaterialDescriptor.builder()
+						.productId(300)
+						.asiKey("asikey")
+						.attributeSetInstanceId(0)
+						.warehouseId(400)
+						.date(SystemTime.asDate())
+						.qty(BigDecimal.valueOf(15))
+						.build())
 				.reference(TableRecordReference.of("someTable", 23))
 				.productionDetail(ProductionCandidateDetail.builder()
 						.plantId(210)
@@ -70,8 +75,9 @@ public class CandidateServiceTests
 
 		final Candidate candidate2 = candidate
 				.withType(Type.DEMAND)
-				.withProductId(310)
-				.withQuantity(BigDecimal.valueOf(20))
+				.withDescr(candidate.getDescr()
+						.withProductId(310)
+						.withQty(BigDecimal.valueOf(20)))
 				.withProductionDetail(ProductionCandidateDetail.builder()
 						.plantId(210)
 						.productPlanningId(220)
@@ -80,8 +86,9 @@ public class CandidateServiceTests
 
 		final Candidate candidate3 = candidate
 				.withType(Type.DEMAND)
-				.withProductId(320)
-				.withQuantity(BigDecimal.valueOf(10))
+				.withDescr(candidate.getDescr()
+						.withProductId(320)
+						.withQty(BigDecimal.valueOf(10)))
 				.withProductionDetail(ProductionCandidateDetail.builder()
 						.plantId(210)
 						.productPlanningId(220)
@@ -112,10 +119,14 @@ public class CandidateServiceTests
 				.orgId(30)
 				.type(Type.SUPPLY)
 				.subType(SubType.DISTRIBUTION)
-				.productId(300)
-				.warehouseId(400)
-				.date(SystemTime.asDate())
-				.quantity(BigDecimal.valueOf(15))
+				.descr(MaterialDescriptor.builder()
+						.productId(300)
+						.asiKey("asikey")
+						.attributeSetInstanceId(0)
+						.warehouseId(400)
+						.date(SystemTime.asDate())
+						.qty(BigDecimal.valueOf(15))
+						.build())
 				.reference(TableRecordReference.of("someTable", 23))
 				.distributionDetail(DistributionCandidateDetail.builder()
 						.productPlanningId(220)
@@ -126,8 +137,9 @@ public class CandidateServiceTests
 
 		final Candidate candidate2 = candidate
 				.withType(Type.DEMAND)
-				.withProductId(310)
-				.withQuantity(BigDecimal.valueOf(20))
+				.withDescr(candidate.getDescr()
+						.withProductId(310)
+						.withQty(BigDecimal.valueOf(20)))
 				.withDistributionDetail(DistributionCandidateDetail.builder()
 						.productPlanningId(220)
 						.plantId(230)
@@ -137,8 +149,9 @@ public class CandidateServiceTests
 
 		final Candidate candidate3 = candidate
 				.withType(Type.DEMAND)
-				.withProductId(320)
-				.withQuantity(BigDecimal.valueOf(10))
+				.withDescr(candidate.getDescr()
+						.withProductId(320)
+						.withQty(BigDecimal.valueOf(10)))
 				.withDistributionDetail(DistributionCandidateDetail.builder()
 						.productPlanningId(220)
 						.plantId(230)
@@ -154,7 +167,7 @@ public class CandidateServiceTests
 		assertThat(distributionOrderEvent.getEventDescr(), notNullValue());
 		assertThat(distributionOrderEvent.getEventDescr().getClientId(), is(20));
 		assertThat(distributionOrderEvent.getEventDescr().getOrgId(), is(30));
-		
+
 		final DDOrder ddOrder = distributionOrderEvent.getDdOrder();
 		assertThat(ddOrder, notNullValue());
 		assertThat(ddOrder.getOrgId(), is(30));

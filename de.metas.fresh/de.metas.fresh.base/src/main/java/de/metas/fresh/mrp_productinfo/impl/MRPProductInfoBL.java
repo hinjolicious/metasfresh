@@ -32,11 +32,11 @@ import de.metas.fresh.model.I_X_MRP_ProductInfo_V;
 import de.metas.fresh.mrp_productinfo.IMRPProductInfoBL;
 import de.metas.fresh.mrp_productinfo.IMRPProductInfoSelector;
 import de.metas.fresh.mrp_productinfo.IMRPProductInfoSelectorFactory;
-import de.metas.handlingunits.model.I_M_Attribute;
 import de.metas.inout.IInOutBL;
 import de.metas.storage.IStorageEngine;
 import de.metas.storage.IStorageEngineService;
 import de.metas.storage.IStorageQuery;
+import de.metas.storage.model.I_M_Attribute;
 
 /*
  * #%L

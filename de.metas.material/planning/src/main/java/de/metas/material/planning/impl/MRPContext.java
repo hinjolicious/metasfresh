@@ -33,6 +33,7 @@ import java.util.Properties;
 import org.adempiere.util.Check;
 import org.compiere.model.I_AD_Org;
 import org.compiere.model.I_C_UOM;
+import org.compiere.model.I_M_AttributeSetInstance;
 import org.compiere.model.I_M_Product;
 import org.compiere.model.I_M_Warehouse;
 import org.compiere.model.I_S_Resource;
@@ -46,6 +47,7 @@ import com.google.common.annotations.VisibleForTesting;
 import de.metas.logging.LogManager;
 import de.metas.material.planning.IMutableMRPContext;
 import de.metas.material.planning.exception.MrpException;
+import de.metas.storage.StorageUtil;
 
 /**
  * It's possible to create instances of this class directly (intended for testing), but generally, please use a factory to do it.
@@ -71,6 +73,8 @@ public final class MRPContext implements IMutableMRPContext
 	private I_AD_Org org;
 	private boolean requireDRP;
 	private I_M_Product product;
+	private I_M_AttributeSetInstance storageRelevantASI;
+
 	private I_PP_Product_Planning productPlanning;
 	private I_S_Resource plant;
 	private I_M_Warehouse warehouse;
@@ -313,6 +317,18 @@ public final class MRPContext implements IMutableMRPContext
 	}
 
 	@Override
+	public void setM_AttributeSetInstance(final I_M_AttributeSetInstance asi)
+	{
+		storageRelevantASI = StorageUtil.mkStorageRelevantASI(asi);
+	}
+
+	@Override
+	public I_M_AttributeSetInstance getStorageRelevantASI()
+	{
+		return storageRelevantASI;
+	}
+
+	@Override
 	public I_PP_Product_Planning getProductPlanning()
 	{
 		return productPlanning;
@@ -500,5 +516,4 @@ public final class MRPContext implements IMutableMRPContext
 	{
 		this.allowCleanup = allowCleanup;
 	}
-
 }

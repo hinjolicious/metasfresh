@@ -6,6 +6,7 @@ import java.util.Date;
 import org.adempiere.util.lang.impl.TableRecordReference;
 
 import de.metas.material.dispo.model.X_MD_Candidate;
+import de.metas.material.event.MaterialDescriptor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -63,26 +64,13 @@ public class Candidate
 	}
 
 	@NonNull
+	private final MaterialDescriptor descr;
+
+	@NonNull
 	private final Integer clientId;
-	
+
 	@NonNull
 	private final Integer orgId;
-
-	@NonNull
-	private final Integer productId;
-
-	private final Integer attributeSetInstanceId;
-
-	@NonNull
-	private final Integer warehouseId;
-
-	/**
-	 * The meaning of this field might differ.
-	 * It can be the absolute stock quantity at a given time (if the type is "stock") or it can be a supply, demand or stock related <b>delta</b>,
-	 * i.e. one addition or removal that occurs at a particular time.
-	 */
-	@NonNull
-	private final BigDecimal quantity;
 
 	@NonNull
 	private final Type type;
@@ -113,17 +101,11 @@ public class Candidate
 	 * Used for additional infos if this candidate has the sub type {@link SubType#DISTRIBUTION}.
 	 */
 	private final DistributionCandidateDetail distributionDetail;
-	
+
 	/**
 	 * Used for additional infos if this candidate relates to particular demand
 	 */
 	private final DemandCandidateDetail demandDetail;
-
-	/**
-	 * The projected date at which we expect this candidate's {@link #getQuantity()}.
-	 */
-	@NonNull
-	private final Date date;
 
 	/**
 	 * Does not create a parent segment, even if this candidate has a parent.
@@ -132,10 +114,13 @@ public class Candidate
 	 */
 	public CandidatesSegment.CandidatesSegmentBuilder mkSegmentBuilder()
 	{
+		final MaterialDescriptor descr = getDescr();
+
 		return CandidatesSegment.builder()
-				.productId(productId)
-				.warehouseId(warehouseId)
-				.date(date);
+				.productId(descr.getProductId())
+				.asiKey(descr.getAsiKey())
+				.warehouseId(descr.getWarehouseId())
+				.date(descr.getDate());
 	}
 
 	public int getParentIdNotNull()
@@ -143,12 +128,88 @@ public class Candidate
 		return getParentId() == null ? 0 : getParentId();
 	}
 
+	/**
+	 * This method is a shortcut to {@link #getDescr()#getQty()}.
+	 * 
+	 * @return
+	 */
+	public BigDecimal getQty()
+	{
+		return getDescr().getQty();
+	}
+
+	/**
+	 * This method is a shortcut to {@link #withDescr(MaterialDescriptor)#withQty(BigDecimal)}.
+	 * 
+	 * @param qty
+	 * @return
+	 */
+	public Candidate withQty(@NonNull final BigDecimal qty)
+	{
+		return withDescr(getDescr().withQty(qty));
+	}
+
+	/**
+	 * This method is a shortcut to {@link #withDescr(MaterialDescriptor)#getProductId()}.
+	 * 
+	 * @param qty
+	 * @return
+	 */
+	public Integer getProductId()
+	{
+		return getDescr().getProductId();
+	}
+
+	/**
+	 * This method is a shortcut to {@link #withDescr(MaterialDescriptor)#getAsiKey()}.
+	 * 
+	 * @param qty
+	 * @return
+	 */
+	public String getAsiKey()
+	{
+		return getDescr().getAsiKey();
+	}
+
+	/**
+	 * This method is a shortcut to {@link #withDescr(MaterialDescriptor)#getAttributeSetInstanceId()}.
+	 * 
+	 * @param qty
+	 * @return
+	 */
+	public int getAttributeSetInstanceId()
+	{
+		return getDescr().getAttributeSetInstanceId();
+	}
+
+	/**
+	 * This method is a shortcut to {@link #withDescr(MaterialDescriptor)#getWarehouseId()}.
+	 * 
+	 * @param qty
+	 * @return
+	 */
+	public Integer getWarehouseId()
+	{
+		return getDescr().getWarehouseId();
+	}
+
+	/**
+	 * This method is a shortcut to {@link #withDescr(MaterialDescriptor)#getDate()}.
+	 * 
+	 * @param qty
+	 * @return
+	 */
+	public Date getDate()
+	{
+		return getDescr().getDate();
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
 	public int getGroupIdNotNull()
 	{
-		if (type == Type.STOCK)
-		{
-			return 0;
-		}
 		if (groupId != null && groupId > 0)
 		{
 			return groupId;

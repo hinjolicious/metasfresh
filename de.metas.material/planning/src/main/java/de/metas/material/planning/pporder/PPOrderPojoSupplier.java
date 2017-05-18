@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Properties;
 
 import org.adempiere.ad.trx.api.ITrx;
+import org.adempiere.mm.attributes.api.IAttributeDAO;
 import org.adempiere.model.InterfaceWrapperHelper;
 import org.adempiere.util.Services;
 import org.compiere.model.I_AD_Workflow;
 import org.compiere.model.I_C_UOM;
+import org.compiere.model.I_M_AttributeSetInstance;
 import org.compiere.model.I_M_Product;
 import org.compiere.model.I_S_Resource;
 import org.compiere.util.Env;
@@ -35,6 +37,7 @@ import de.metas.material.planning.ProductPlanningBL;
 import de.metas.material.planning.RoutingService;
 import de.metas.material.planning.RoutingServiceFactory;
 import de.metas.material.planning.exception.MrpException;
+import de.metas.storage.StorageUtil;
 import lombok.NonNull;
 
 /*
@@ -105,6 +108,8 @@ public class PPOrderPojoSupplier
 
 		final Timestamp dateStartSchedule = TimeUtil.addDays(dateFinishSchedule, -durationDays);
 
+		final int asiId = getAsiId(mrpContext.getStorageRelevantASI());
+
 		final PPOrderBuilder ppOrderPojoBuilder = PPOrder.builder()
 				.orgId(mrpContext.getAD_Org_ID())
 				//
@@ -115,6 +120,8 @@ public class PPOrderPojoSupplier
 				//
 				// Product, UOM, ASI
 				.productId(product.getM_Product_ID())
+				.attributeSetInstanceId(asiId)
+				.asiKey(StorageUtil.getASIKey(asiId))
 				.uomId(uom.getC_UOM_ID())
 
 				//
@@ -128,8 +135,7 @@ public class PPOrderPojoSupplier
 				.orderLineId(request.getMRPDemandOrderLineSOId())
 				//
 				// offer further advise :-)
-				.createPPOrder(productPlanningData.isCreatePlan())
-				;
+				.createPPOrder(productPlanningData.isCreatePlan());
 
 		return ppOrderPojoBuilder.build();
 	}
@@ -190,11 +196,14 @@ public class PPOrderPojoSupplier
 				continue;
 			}
 
+			final int bomAsiID = getAsiId(productBomLine.getM_AttributeSetInstance());
+
 			final PPOrderLine ppOrderLine = PPOrderLine.builder()
 					.productBomLineId(productBomLine.getPP_Product_BOMLine_ID())
 					.description(productBomLine.getDescription())
 					.productId(productBomLine.getM_Product_ID())
-					.attributeSetInstanceId(productBomLine.getM_AttributeSetInstance_ID())
+					.attributeSetInstanceId(bomAsiID)
+					.asiKey(StorageUtil.getASIKey(bomAsiID))
 					.qtyRequired(BigDecimal.ZERO) // is computed in the next step
 					.build();
 
@@ -205,6 +214,26 @@ public class PPOrderPojoSupplier
 		}
 
 		return result;
+	}
+
+	/**
+	 * If the given {@code asi} is {@code null} it returns zero. Otherwise is copies the given {@code asi} and returns the copy's ID.
+	 * 
+	 * @param asi
+	 * @return
+	 */
+	private int getAsiId(final I_M_AttributeSetInstance asi)
+	{
+		final int asiId;
+		if (asi != null && asi.getM_AttributeSetInstance_ID() > 0)
+		{
+			asiId = Services.get(IAttributeDAO.class).copy(asi).getM_AttributeSetInstance_ID();
+		}
+		else
+		{
+			asiId = 0;
+		}
+		return asiId;
 	}
 
 	private I_PP_Product_BOM retriveAndVerifyBOM(@NonNull final PPOrder ppOrder)

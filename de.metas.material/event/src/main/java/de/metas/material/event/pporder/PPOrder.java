@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.compiere.model.I_S_Resource;
 
+import de.metas.material.event.MaterialDescriptor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -58,6 +59,18 @@ public class PPOrder
 	@NonNull
 	private final Integer productId;
 
+	/**
+	 * See {@link MaterialDescriptor#getAttributeSetInstanceId()}.
+	 */
+	@NonNull
+	private final Integer attributeSetInstanceId;
+	
+	/**
+	 * See {@link MaterialDescriptor#getAsiKey()}.
+	 */
+	@NonNull
+	private final String asiKey;
+		
 	@NonNull
 	private final Integer uomId;
 

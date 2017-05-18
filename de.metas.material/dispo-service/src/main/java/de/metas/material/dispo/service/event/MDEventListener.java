@@ -6,11 +6,10 @@ import org.springframework.stereotype.Service;
 import de.metas.material.dispo.Candidate;
 import de.metas.material.dispo.Candidate.SubType;
 import de.metas.material.dispo.Candidate.Type;
-import de.metas.material.dispo.service.CandidateChangeHandler;
 import de.metas.material.dispo.DemandCandidateDetail;
+import de.metas.material.dispo.service.CandidateChangeHandler;
 import de.metas.material.event.DistributionPlanEvent;
 import de.metas.material.event.EventDescr;
-import de.metas.material.event.MaterialDescriptor;
 import de.metas.material.event.MaterialEvent;
 import de.metas.material.event.MaterialEventListener;
 import de.metas.material.event.ProductionPlanEvent;
@@ -94,18 +93,13 @@ public class MDEventListener implements MaterialEventListener
 			return;
 		}
 
-		final MaterialDescriptor materialDescr = event.getMaterialDescr();
-
 		final EventDescr eventDescr = event.getEventDescr();
 
 		final Candidate candidate = Candidate.builder()
 				.type(Type.STOCK)
 				.clientId(eventDescr.getClientId())
 				.orgId(eventDescr.getOrgId())
-				.warehouseId(materialDescr.getWarehouseId())
-				.date(materialDescr.getDate())
-				.productId(materialDescr.getProductId())
-				.quantity(materialDescr.getQty())
+				.descr(event.getMaterialDescr())
 				.reference(event.getReference())
 				.build();
 
@@ -120,8 +114,6 @@ public class MDEventListener implements MaterialEventListener
 			return;
 		}
 
-		final MaterialDescriptor materialDescr = event.getMaterialDescr();
-
 		final EventDescr eventDescr = event.getEventDescr();
 
 		final Candidate candidate = Candidate.builder()
@@ -129,10 +121,7 @@ public class MDEventListener implements MaterialEventListener
 				.subType(SubType.RECEIPT)
 				.clientId(eventDescr.getClientId())
 				.orgId(eventDescr.getOrgId())
-				.date(materialDescr.getDate())
-				.warehouseId(materialDescr.getWarehouseId())
-				.productId(materialDescr.getProductId())
-				.quantity(materialDescr.getQty())
+				.descr(event.getMaterialDescr())
 				.reference(event.getReference())
 				.build();
 
@@ -147,8 +136,6 @@ public class MDEventListener implements MaterialEventListener
 			return;
 		}
 
-		final MaterialDescriptor materialDescr = event.getMaterialDescr();
-
 		final EventDescr eventDescr = event.getEventDescr();
 
 		final Candidate candidate = Candidate.builder()
@@ -156,10 +143,7 @@ public class MDEventListener implements MaterialEventListener
 				.subType(SubType.SHIPMENT)
 				.clientId(eventDescr.getClientId())
 				.orgId(eventDescr.getOrgId())
-				.date(materialDescr.getDate())
-				.warehouseId(materialDescr.getWarehouseId())
-				.productId(materialDescr.getProductId())
-				.quantity(materialDescr.getQty())
+				.descr(event.getMaterialDescr())
 				.reference(event.getReference())
 				.demandDetail(DemandCandidateDetail.builder()
 						.orderLineId(event.getOrderLineId())

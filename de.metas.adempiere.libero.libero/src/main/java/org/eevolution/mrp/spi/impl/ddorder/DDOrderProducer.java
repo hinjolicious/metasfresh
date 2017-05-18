@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Properties;
 
 import org.adempiere.ad.trx.api.ITrx;
+import org.adempiere.mm.attributes.api.IAttributeDAO;
+import org.adempiere.mm.attributes.api.IAttributeSetInstanceBL;
 import org.adempiere.model.InterfaceWrapperHelper;
 import org.adempiere.service.IOrgDAO;
 import org.adempiere.util.Services;
 import org.adempiere.warehouse.api.IWarehouseBL;
 import org.compiere.model.I_AD_Org;
 import org.compiere.model.I_C_UOM;
+import org.compiere.model.I_M_AttributeSetInstance;
 import org.compiere.model.I_M_Locator;
 import org.compiere.model.I_M_Product;
 import org.compiere.model.I_M_Warehouse;
@@ -128,8 +131,10 @@ public class DDOrderProducer
 			//
 			// Create DD Order Line
 			final I_DD_OrderLine ddOrderline = InterfaceWrapperHelper.newInstance(I_DD_OrderLine.class, ddOrder);
+			
 			ddOrderline.setAD_Org_ID(pojo.getOrgId());
 			ddOrderline.setDD_Order(ddOrder);
+			
 			ddOrderline.setC_OrderLineSO_ID(linePojo.getSalesOrderLineId());
 			if (linePojo.getSalesOrderLineId() > 0)
 			{
@@ -158,8 +163,13 @@ public class DDOrderProducer
 			// NOTE: we assume qtyToMove is in "mrpContext.getC_UOM()" which shall be the Product's stocking UOM
 
 			final I_M_Product product = InterfaceWrapperHelper.create(Env.getCtx(), linePojo.getProductId(), I_M_Product.class, ITrx.TRXNAME_ThreadInherited);
-
 			ddOrderline.setM_Product_ID(linePojo.getProductId());
+
+			final IAttributeDAO attributeDAO = Services.get(IAttributeDAO.class);
+			final I_M_AttributeSetInstance asi = InterfaceWrapperHelper.create(request.getMRPContext().getCtx(), linePojo.getAttributeSetInstanceId(), I_M_AttributeSetInstance.class, ITrx.TRXNAME_ThreadInherited);
+			ddOrderline.setM_AttributeSetInstance(attributeDAO.copy(asi));
+			ddOrderline.setM_AttributeSetInstanceTo(attributeDAO.copy(asi));
+
 			ddOrderline.setC_UOM_ID(product.getC_UOM_ID());
 			ddOrderline.setQtyEntered(linePojo.getQty());
 			ddOrderline.setQtyOrdered(linePojo.getQty());
@@ -175,7 +185,7 @@ public class DDOrderProducer
 			ddOrderline.setIsInvoiced(false);
 			ddOrderline.setDD_AllowPush(networkDistributionLine.isDD_AllowPush());
 			ddOrderline.setIsKeepTargetPlant(networkDistributionLine.isKeepTargetPlant());
-
+			
 			//
 			// Save DD Order Line
 			InterfaceWrapperHelper.save(ddOrderline);

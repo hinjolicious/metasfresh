@@ -31,6 +31,7 @@ import java.util.Properties;
 import org.adempiere.model.IContextAware;
 import org.compiere.model.I_AD_Org;
 import org.compiere.model.I_C_UOM;
+import org.compiere.model.I_M_AttributeSetInstance;
 import org.compiere.model.I_M_Product;
 import org.compiere.model.I_M_Warehouse;
 import org.compiere.model.I_S_Resource;
@@ -80,6 +81,13 @@ public interface IMaterialPlanningContext extends IContextAware
 	I_M_Warehouse getM_Warehouse();
 	int getM_Product_ID();
 	I_M_Product getM_Product();
+	
+	/**
+	 * Return an ASI that contains only those attributes whose {@link de.metas.storage.model.I_M_Attribute}s are flagged as storage relevant.
+	 * Also see {@link IMutableMRPContext#setM_AttributeSetInstance(I_M_AttributeSetInstance)}.
+	 * @return
+	 */
+	I_M_AttributeSetInstance getStorageRelevantASI();
 	//@formatter:on
 
 	/**

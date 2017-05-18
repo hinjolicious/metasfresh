@@ -20,6 +20,7 @@ import org.adempiere.util.lang.ITableRecordReference;
 import org.adempiere.util.lang.impl.TableRecordReference;
 import org.apache.ecs.xhtml.code;
 import org.compiere.util.Env;
+import org.compiere.util.Util;
 import org.springframework.stereotype.Service;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -33,6 +34,7 @@ import de.metas.material.dispo.model.I_MD_Candidate;
 import de.metas.material.dispo.model.I_MD_Candidate_Demand_Detail;
 import de.metas.material.dispo.model.I_MD_Candidate_Dist_Detail;
 import de.metas.material.dispo.model.I_MD_Candidate_Prod_Detail;
+import de.metas.material.event.MaterialDescriptor;
 import lombok.NonNull;
 
 /*
@@ -91,7 +93,7 @@ public class CandidateRepository
 		final Optional<I_MD_Candidate> oldCandidateRecord = retrieveExact(candidate);
 
 		final BigDecimal oldqty = oldCandidateRecord.isPresent() ? oldCandidateRecord.get().getQty() : BigDecimal.ZERO;
-		final BigDecimal qtyDelta = candidate.getQuantity().subtract(oldqty);
+		final BigDecimal qtyDelta = candidate.getQty().subtract(oldqty);
 
 		final I_MD_Candidate synchedRecord = syncToRecord(oldCandidateRecord, candidate, preserveExistingSeqNo);
 		InterfaceWrapperHelper.save(synchedRecord);
@@ -131,7 +133,7 @@ public class CandidateRepository
 				.withParentId(parentId)
 				.withGroupId(synchedRecord.getMD_Candidate_GroupId())
 				.withSeqNo(synchedRecord.getSeqNo())
-				.withQuantity(qtyDelta);
+				.withQty(qtyDelta);
 	}
 
 	/**
@@ -151,12 +153,12 @@ public class CandidateRepository
 		final I_MD_Candidate candidateRecord = InterfaceWrapperHelper.create(Env.getCtx(), candidateToUpdate.getId(), I_MD_Candidate.class, ITrx.TRXNAME_ThreadInherited);
 
 		final BigDecimal oldQty = candidateRecord.getQty();
-		candidateRecord.setQty(candidateToUpdate.getQuantity());
+		candidateRecord.setQty(candidateToUpdate.getQty());
 		InterfaceWrapperHelper.save(candidateRecord);
 
-		final BigDecimal qtyDelta = candidateToUpdate.getQuantity().subtract(oldQty);
+		final BigDecimal qtyDelta = candidateToUpdate.getQty().subtract(oldQty);
 
-		return candidateToUpdate.withQuantity(qtyDelta);
+		return candidateToUpdate.withQty(qtyDelta);
 	}
 
 	private void addOrRecplaceProductionDetail(
@@ -361,9 +363,9 @@ public class CandidateRepository
 				.createQueryBuilder(I_MD_Candidate.class)
 				.addOnlyActiveRecordsFilter()
 				.addEqualsFilter(I_MD_Candidate.COLUMN_MD_Candidate_Type, candidate.getType().toString())
-				.addEqualsFilter(I_MD_Candidate.COLUMN_M_Warehouse_ID, candidate.getWarehouseId())
-				.addEqualsFilter(I_MD_Candidate.COLUMN_M_Product_ID, candidate.getProductId())
-				.addEqualsFilter(I_MD_Candidate.COLUMN_DateProjected, candidate.getDate());
+				.addEqualsFilter(I_MD_Candidate.COLUMN_M_Warehouse_ID, candidate.getDescr().getWarehouseId())
+				.addEqualsFilter(I_MD_Candidate.COLUMN_M_Product_ID, candidate.getDescr().getProductId())
+				.addEqualsFilter(I_MD_Candidate.COLUMN_DateProjected, candidate.getDescr().getDate());
 
 		final TableRecordReference referencedRecord = candidate.getReference();
 		if (referencedRecord != null)
@@ -492,10 +494,13 @@ public class CandidateRepository
 
 		candidateRecordToUse.setAD_Org_ID(candidate.getOrgId());
 		candidateRecordToUse.setMD_Candidate_Type(candidate.getType().toString());
+
 		candidateRecordToUse.setM_Warehouse_ID(candidate.getWarehouseId());
 		candidateRecordToUse.setM_Product_ID(candidate.getProductId());
-		candidateRecordToUse.setQty(candidate.getQuantity());
 		candidateRecordToUse.setDateProjected(new Timestamp(candidate.getDate().getTime()));
+		candidateRecordToUse.setQty(candidate.getQty());
+		candidateRecordToUse.setASIKey(candidate.getAsiKey());
+		candidateRecordToUse.setM_AttributeSetInstance_ID(candidate.getAttributeSetInstanceId());
 
 		if (candidate.getSubType() != null)
 		{
@@ -556,17 +561,22 @@ public class CandidateRepository
 				.id(candidateRecord.getMD_Candidate_ID())
 				.clientId(candidateRecord.getAD_Client_ID())
 				.orgId(candidateRecord.getAD_Org_ID())
-				.productId(candidateRecord.getM_Product_ID())
-				.quantity(candidateRecord.getQty())
+				.descr(MaterialDescriptor.builder()
+						// make sure to add a Date and not a Timestamp to avoid confusing Candidate's equals() and hashCode() methods
+						.date(new Date(candidateRecord.getDateProjected().getTime()))
+
+						.productId(candidateRecord.getM_Product_ID())
+						.attributeSetInstanceId(candidateRecord.getM_AttributeSetInstance_ID())
+						.asiKey(Util.coalesce(candidateRecord.getASIKey(), ""))
+						.attributeSetInstanceId(candidateRecord.getM_AttributeSetInstance_ID())
+						.qty(candidateRecord.getQty())
+						.warehouseId(candidateRecord.getM_Warehouse_ID())
+						.build())
 				.seqNo(candidateRecord.getSeqNo())
 				.type(Type.valueOf(candidateRecord.getMD_Candidate_Type()))
-				.warehouseId(candidateRecord.getM_Warehouse_ID())
 
 				// if the record has a group id, then set it. otherwise set null, because a "vanilla" candidate without groupId also has null here (null and not zero)
-				.groupId(candidateRecord.getMD_Candidate_GroupId() <= 0 ? null : candidateRecord.getMD_Candidate_GroupId())
-
-				// make sure to add a Date and not a Timestamp to avoid confusing Candidate's equals() and hashCode() methods
-				.date(new Date(candidateRecord.getDateProjected().getTime()));
+				.groupId(candidateRecord.getMD_Candidate_GroupId() <= 0 ? null : candidateRecord.getMD_Candidate_GroupId());
 
 		if (candidateRecord.getMD_Candidate_Parent_ID() > 0)
 		{
@@ -702,6 +712,10 @@ public class CandidateRepository
 		if (segment.getProductId() != null)
 		{
 			builder.addEqualsFilter(I_MD_Candidate.COLUMN_M_Product_ID, segment.getProductId());
+		}
+		if (segment.getAsiKey() != null)
+		{
+			builder.addEqualsFilter(I_MD_Candidate.COLUMN_ASIKey, segment.getAsiKey());
 		}
 
 		if (segment.getWarehouseId() != null)

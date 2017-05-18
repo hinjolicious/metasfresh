@@ -38,6 +38,7 @@ import org.junit.Test;
 
 import de.metas.adempiere.model.I_M_Product;
 import de.metas.material.event.pporder.PPOrder;
+import de.metas.storage.StorageUtil;
 
 /*
  * #%L
@@ -157,6 +158,8 @@ public class MaterialDocumentListenerTests
 				.plantId(110)
 				.orderLineId(orderLine.getC_OrderLine_ID())
 				.productId(bomMainProduct.getM_Product_ID())
+				.attributeSetInstanceId(productBom.getM_AttributeSetInstance_ID())
+				.asiKey(StorageUtil.getASIKey(productBom.getM_AttributeSetInstance_ID()))
 				.productPlanningId(productPlanning.getPP_Product_Planning_ID())
 				.quantity(BigDecimal.TEN)
 				.uomId(uom.getC_UOM_ID())

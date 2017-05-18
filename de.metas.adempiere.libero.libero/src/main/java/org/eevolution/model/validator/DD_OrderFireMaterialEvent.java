@@ -19,6 +19,7 @@ import de.metas.material.event.MaterialEventService;
 import de.metas.material.event.ddorder.DDOrder;
 import de.metas.material.event.ddorder.DDOrder.DDOrderBuilder;
 import de.metas.material.planning.ddorder.DDOrderUtil;
+import de.metas.storage.StorageUtil;
 import de.metas.material.event.ddorder.DDOrderLine;
 
 /**
@@ -55,10 +56,15 @@ public class DD_OrderFireMaterialEvent
 		{
 			final int durationDays = DDOrderUtil.calculateDurationDays(ddOrder.getPP_Product_Planning(), line.getDD_NetworkDistributionLine());
 			
+			// M_AttributeSetInstance_ID and M_AttributeSetInstanceTo_ID are logically the same. I think the reason for having them both is just the way ASI was used in M_Storage
+			final int asiId = line.getM_AttributeSetInstance_ID();
+			
 			ddOrderPojoBuilder.line(DDOrderLine.builder()
-					.attributeSetInstanceId(line.getM_AttributeSetInstance_ID())
+					.attributeSetInstanceId(asiId)
 					.ddOrderLineId(line.getDD_OrderLine_ID())
 					.productId(line.getM_Product_ID())
+					.asiKey(StorageUtil.getASIKey(asiId))
+					.attributeSetInstanceId(asiId)
 					.qty(line.getQtyDelivered())
 					.networkDistributionLineId(line.getDD_NetworkDistributionLine_ID())
 					.salesOrderLineId(line.getC_OrderLineSO_ID())

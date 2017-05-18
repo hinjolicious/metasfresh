@@ -23,6 +23,7 @@ import de.metas.material.dispo.Candidate;
 import de.metas.material.dispo.CandidateRepository;
 import de.metas.material.dispo.Candidate.Type;
 import de.metas.material.dispo.service.CandidateFactory;
+import de.metas.material.event.MaterialDescriptor;
 
 /*
  * #%L
@@ -89,10 +90,14 @@ public class CandidateFactoryTests
 				.type(Type.STOCK)
 				.clientId(org.getAD_Client_ID())
 				.orgId(org.getAD_Org_ID())
-				.productId(product.getM_Product_ID())
-				.warehouseId(warehouse.getM_Warehouse_ID())
-				.quantity(new BigDecimal("10"))
-				.date(now)
+				.descr(MaterialDescriptor.builder()
+						.productId(product.getM_Product_ID())
+						.asiKey("asiKey")
+						.attributeSetInstanceId(20)
+						.warehouseId(warehouse.getM_Warehouse_ID())
+						.qty(new BigDecimal("10"))
+						.date(now)
+						.build())
 				.build();
 		candidateRepository.addOrUpdate(stockCandidate);
 	}
@@ -107,14 +112,18 @@ public class CandidateFactoryTests
 				.type(Type.STOCK)
 				.clientId(org.getAD_Client_ID())
 				.orgId(org.getAD_Org_ID())
-				.productId(product.getM_Product_ID())
-				.warehouseId(warehouse.getM_Warehouse_ID())
-				.date(earlier)
-				.quantity(BigDecimal.ONE)
+				.descr(MaterialDescriptor.builder()
+						.productId(product.getM_Product_ID())
+						.asiKey("asiKey")
+						.attributeSetInstanceId(20)
+						.warehouseId(warehouse.getM_Warehouse_ID())
+						.date(earlier)
+						.qty(BigDecimal.ONE)
+						.build())
 				.build();
 
 		final Candidate newCandidateBefore = candidateFactory.createStockCandidate(candidate);
-		assertThat(newCandidateBefore.getQuantity(), comparesEqualTo(new BigDecimal("1")));
+		assertThat(newCandidateBefore.getQty(), comparesEqualTo(new BigDecimal("1")));
 	}
 
 	/**
@@ -127,13 +136,17 @@ public class CandidateFactoryTests
 				.type(Type.STOCK)
 				.clientId(org.getAD_Client_ID())
 				.orgId(org.getAD_Org_ID())
-				.productId(product.getM_Product_ID())
-				.warehouseId(warehouse.getM_Warehouse_ID())
-				.date(later)
-				.quantity(BigDecimal.ONE)
+				.descr(MaterialDescriptor.builder()
+						.productId(product.getM_Product_ID())
+						.asiKey("asiKey")
+						.attributeSetInstanceId(20)
+						.warehouseId(warehouse.getM_Warehouse_ID())
+						.date(later)
+						.qty(BigDecimal.ONE)
+						.build())
 				.build();
 
 		final Candidate newCandidateAfter = candidateFactory.createStockCandidate(candidate);
-		assertThat(newCandidateAfter.getQuantity(), comparesEqualTo(new BigDecimal("11")));
+		assertThat(newCandidateAfter.getQty(), comparesEqualTo(new BigDecimal("11")));
 	}
 }
