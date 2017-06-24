@@ -34,7 +34,6 @@ import org.adempiere.service.ISysConfigBL;
 import org.adempiere.util.Check;
 import org.adempiere.util.GuavaCollectors;
 import org.adempiere.util.Services;
-import org.adempiere.util.api.IMsgBL;
 import org.compiere.model.MQuery.Operator;
 import org.compiere.util.DB;
 import org.compiere.util.DisplayType;
@@ -46,6 +45,7 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.ImmutableList;
 
+import de.metas.i18n.IMsgBL;
 import de.metas.logging.LogManager;
 
 /**
@@ -165,7 +165,9 @@ public final class MQuery implements Serializable
 				//
 				// Check if the parameter exists as column in our table.
 				// This condition applies only to temporary tables - teo_sarca [ 2860022 ]
-				if (isTemporaryTable && table != null && table.getColumn(ParameterName) == null)
+				final IADTableDAO tableDAO = Services.get(IADTableDAO.class);
+				if (isTemporaryTable && table != null 
+						&& tableDAO.retrieveColumnOrNull(table.get_TableName(), ParameterName) == null)
 				{
 					s_log.info("Skip parameter " + ParameterName + " because there is no column in table " + TableName);
 					continue;
@@ -517,7 +519,8 @@ public final class MQuery implements Serializable
 				.collect(GuavaCollectors.toImmutableMapByKey(op -> op.getCode()));
 		
 		public static final List<Operator> operatorsForBooleans = ImmutableList.of(EQUAL); 
-		public static final List<Operator> operatorsForLookups = ImmutableList.of(EQUAL, NOT_EQUAL); 
+		public static final List<Operator> operatorsForLookups = ImmutableList.of(EQUAL, NOT_EQUAL);
+		public static final List<Operator> operators = ImmutableList.of(EQUAL, NOT_EQUAL, LIKE, LIKE_I, NOT_LIKE, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, BETWEEN); // note: does not include NOT_LIKE_I
 	}
 
 	/*************************************************************************
