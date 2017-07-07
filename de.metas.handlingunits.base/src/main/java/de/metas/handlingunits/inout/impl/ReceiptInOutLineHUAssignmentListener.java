@@ -211,4 +211,4 @@ public final class ReceiptInOutLineHUAssignmentListener extends HUAssignmentList
 		// Sets the ex-Vendor BPartner ID as SubProducer.
 		huAttributeStorage.setValue(attribute_subProducer, bpartnerId);
 	}
-}
+		}

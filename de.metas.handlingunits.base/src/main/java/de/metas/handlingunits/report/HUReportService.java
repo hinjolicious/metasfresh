@@ -152,6 +152,6 @@ public class HUReportService
 		logger.info("SysConfig {}={};", SYSCONFIG_RECEIPT_LABEL_AUTO_PRINT_ENABLED, genericValue);
 
 		return DisplayType.toBoolean(genericValue, false);
-	}
+}
 
 }
