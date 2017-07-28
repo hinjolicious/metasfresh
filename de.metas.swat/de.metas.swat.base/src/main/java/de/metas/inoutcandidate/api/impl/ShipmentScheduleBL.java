@@ -56,7 +56,6 @@ import org.adempiere.uom.api.IUOMConversionBL;
 import org.adempiere.util.Check;
 import org.adempiere.util.Services;
 import org.adempiere.util.agg.key.IAggregationKeyBuilder;
-import org.adempiere.util.api.IMsgBL;
 import org.adempiere.util.time.SystemTime;
 import org.adempiere.warehouse.spi.IWarehouseAdvisor;
 import org.compiere.model.I_C_BPartner_Location;
@@ -77,6 +76,7 @@ import de.metas.adempiere.model.I_AD_User;
 import de.metas.adempiere.model.I_C_Order;
 import de.metas.adempiere.model.I_M_Product;
 import de.metas.document.engine.IDocActionBL;
+import de.metas.i18n.IMsgBL;
 import de.metas.inout.model.I_M_InOut;
 import de.metas.inout.model.I_M_InOutLine;
 import de.metas.inoutcandidate.api.IDeliverRequest;
@@ -1150,6 +1150,7 @@ public class ShipmentScheduleBL implements IShipmentScheduleBL
 
 		// FIXME: introduce M_ShipmentSchedule.C_UOM_ID
 		// See http://dewiki908/mediawiki/index.php/05565_Introduce_M_ShipmentSchedule.C_UOM_ID_%28107483088069%29
+		// when changing also pls check/fix M_Packageable_V view
 
 		// return sched.getC_OrderLine().getC_UOM();
 		return sched.getM_Product().getC_UOM();

@@ -4,17 +4,21 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.adempiere.ad.trx.api.ITrx;
 import org.adempiere.ad.trx.api.ITrxManager;
 import org.adempiere.bpartner.service.IBPartnerDAO;
+import org.adempiere.exceptions.AdempiereException;
 import org.adempiere.model.IContextAware;
 import org.adempiere.model.InterfaceWrapperHelper;
 import org.adempiere.util.GuavaCollectors;
 import org.adempiere.util.Services;
+import org.compiere.model.I_C_Order;
 import org.compiere.model.I_M_Warehouse;
 import org.compiere.model.X_M_Transaction;
 import org.compiere.util.Env;
@@ -23,11 +27,13 @@ import org.compiere.util.Util.ArrayKey;
 import de.metas.adempiere.model.I_C_BPartner_Location;
 import de.metas.flatrate.interfaces.I_C_BPartner;
 import de.metas.handlingunits.IHUAssignmentDAO;
-import de.metas.handlingunits.IHUTrxBL;
 import de.metas.handlingunits.IHandlingUnitsBL;
+import de.metas.handlingunits.IHandlingUnitsDAO;
+import de.metas.handlingunits.hutransaction.IHUTrxBL;
 import de.metas.handlingunits.inout.IHUInOutBL;
 import de.metas.handlingunits.model.I_M_HU;
 import de.metas.handlingunits.model.I_M_HU_Assignment;
+import de.metas.handlingunits.model.I_M_HU_Item;
 import de.metas.handlingunits.model.I_M_InOut;
 import de.metas.handlingunits.model.I_M_InOutLine;
 import de.metas.inout.event.ReturnInOutProcessedEventBus;
@@ -71,6 +77,7 @@ public class MultiCustomerHUReturnsInOutProducer
 	// services
 	private final transient IHUAssignmentDAO huAssignmentDAO = Services.get(IHUAssignmentDAO.class);
 	private final transient IHandlingUnitsBL handlingUnitsBL = Services.get(IHandlingUnitsBL.class);
+	private final transient IHandlingUnitsDAO handlingUnitsDAO = Services.get(IHandlingUnitsDAO.class);
 	private final transient IHUTrxBL huTrxBL = Services.get(IHUTrxBL.class);
 	//
 	private final transient ITrxManager trxManager = Services.get(ITrxManager.class);
@@ -100,6 +107,27 @@ public class MultiCustomerHUReturnsInOutProducer
 		final int inOutLineTableId = InterfaceWrapperHelper.getTableId(I_M_InOutLine.class); // The M_InOutLine's table id
 		for (final I_M_HU hu : getHUsToReturn())
 		{
+			// activate hu's children
+			{
+
+				final Set<I_M_HU> childHUs = new HashSet<I_M_HU>();
+
+				{
+					final List<I_M_HU_Item> huItems = handlingUnitsDAO.retrieveItems(hu);
+
+					for (final I_M_HU_Item huItem : huItems)
+					{
+						childHUs.addAll(handlingUnitsDAO.retrieveChildHUsForItem(huItem));
+					}
+				}
+				
+				for(final I_M_HU childHU : childHUs)
+				{
+					childHU.setIsActive(true);
+					InterfaceWrapperHelper.save(childHU);
+				}
+			
+			}
 			InterfaceWrapperHelper.setTrxName(hu, ITrx.TRXNAME_ThreadInherited);
 			final IContextAware ctxAware = InterfaceWrapperHelper.getContextAware(hu);
 
@@ -107,18 +135,19 @@ public class MultiCustomerHUReturnsInOutProducer
 
 			//
 			// Find out the HU assignments to original vendor material receipt
-			List<I_M_HU_Assignment> inOutLineHUAssignments = huAssignmentDAO.retrieveTableHUAssignments(ctxAware, inOutLineTableId, hu);
+			List<I_M_HU_Assignment> inOutLineHUAssignments = huAssignmentDAO.retrieveTableHUAssignmentsNoTopFilter(ctxAware, inOutLineTableId, hu);
 			// if the given HU does not have any inout line HU assignments, it might be that it is an aggregated HU.
 			// fallback on the HU assignments of the top level HU
 			if (inOutLineHUAssignments.isEmpty())
 			{
 				final I_M_HU topLevelHU = handlingUnitsBL.getTopLevelParent(hu);
-				inOutLineHUAssignments = huAssignmentDAO.retrieveTableHUAssignments(ctxAware, inOutLineTableId, topLevelHU);
+				inOutLineHUAssignments = huAssignmentDAO.retrieveTableHUAssignmentsNoTopFilter(ctxAware, inOutLineTableId, topLevelHU);
 			}
 
+			// there were no HU Asignments for inoutlines.
 			if (inOutLineHUAssignments.isEmpty())
 			{
-				inOutLineHUAssignments = huAssignmentDAO.retrieveTableHUAssignmentsNoTopFilter(ctxAware, inOutLineTableId, hu);
+				throw new AdempiereException("No InOutLine HUAssignments for selected HU");
 			}
 
 			//
@@ -139,13 +168,21 @@ public class MultiCustomerHUReturnsInOutProducer
 					continue;
 				}
 				final org.compiere.model.I_M_InOut inout = inoutLine.getM_InOut();
+
+				if (!inout.isSOTrx())
+				{
+					// do not allow HUs from receipts to get into customer returns
+					continue;
+				}
+
 				final int bpartnerId = inout.getC_BPartner_ID();
 
+				final I_C_Order order = inout.getC_Order();
 				// Add the HU to the right producer
 				// NOTE: There will be one return inout for each partner and warehouse
 				// The return inout lines will be created based on the origin inoutlines (from receipts)
 				final ArrayKey customerReturnProducerKey = ArrayKey.of(warehouseId, bpartnerId);
-				customerReturnProducers.computeIfAbsent(customerReturnProducerKey, k -> createCustomerReturnInOutProducer(bpartnerId, warehouseId))
+				customerReturnProducers.computeIfAbsent(customerReturnProducerKey, k -> createCustomerReturnInOutProducer(bpartnerId, warehouseId, order))
 						.addHUToReturn(hu, originalShipmentInOutLineId);
 			}
 		}
@@ -161,20 +198,20 @@ public class MultiCustomerHUReturnsInOutProducer
 		// Send notifications
 		if (!returnInOuts.isEmpty())
 		{
-			if (_manualCustomerReturn != null)
+			if (_manualCustomerReturn == null)
 			{
 				ReturnInOutProcessedEventBus.newInstance()
 						.queueEventsUntilTrxCommit(ITrx.TRXNAME_ThreadInherited)
 						.notify(returnInOuts);
 			}
-			
+
 			else
 			{
 				InterfaceWrapperHelper.refresh(_manualCustomerReturn);
 			}
 			final Properties ctx = InterfaceWrapperHelper.getCtx(returnInOuts.get(0));
 			// mark HUs as active and create movements to QualityReturnWarehouse for them
-			Services.get(IHUInOutBL.class).activateHUsForCustomerReturn(ctx, getHUsToReturn());
+			Services.get(IHUInOutBL.class).moveHUsForCustomerReturn(ctx, getHUsToReturn());
 
 			handlingUnitsBL.setHUStatusActive(_husToReturn);
 		}
@@ -190,7 +227,7 @@ public class MultiCustomerHUReturnsInOutProducer
 	 * @param hus
 	 * @return
 	 */
-	private CustomerReturnsInOutProducer createCustomerReturnInOutProducer(final int partnerId, final int warehouseId)
+	private CustomerReturnsInOutProducer createCustomerReturnInOutProducer(final int partnerId, final int warehouseId, final I_C_Order originOrder)
 	{
 		final IBPartnerDAO bpartnerDAO = Services.get(IBPartnerDAO.class);
 		final Properties ctx = Env.getCtx();
@@ -206,6 +243,8 @@ public class MultiCustomerHUReturnsInOutProducer
 		producer.setM_Warehouse(warehouse);
 
 		producer.setMovementDate(getMovementDate());
+
+		producer.setC_Order(originOrder);
 
 		if (_manualCustomerReturn != null)
 		{

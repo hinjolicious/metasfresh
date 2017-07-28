@@ -260,17 +260,19 @@ public interface I_M_HU
 	 * Set Gesperrt.
 	 *
 	 * <br>Type: YesNo
-	 * <br>Mandatory: true
-	 * <br>Virtual Column: false
+	 * <br>Mandatory: false
+	 * <br>Virtual Column: true
+	 * @deprecated Please don't use it because this is a virtual column
 	 */
+	@Deprecated
 	public void setLocked (boolean Locked);
 
 	/**
 	 * Get Gesperrt.
 	 *
 	 * <br>Type: YesNo
-	 * <br>Mandatory: true
-	 * <br>Virtual Column: false
+	 * <br>Mandatory: false
+	 * <br>Virtual Column: true
 	 */
 	public boolean isLocked();
 
