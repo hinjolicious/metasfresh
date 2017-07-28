@@ -58,7 +58,6 @@ import org.adempiere.util.ILoggable;
 import org.adempiere.util.Loggables;
 import org.adempiere.util.Services;
 import org.adempiere.util.StringUtils;
-import org.adempiere.util.api.IMsgBL;
 import org.compiere.model.I_AD_Column;
 import org.compiere.model.I_AD_Ref_Table;
 import org.compiere.model.I_AD_Reference;
@@ -84,6 +83,7 @@ import de.metas.adempiere.model.I_AD_User;
 import de.metas.adempiere.model.I_C_Order;
 import de.metas.adempiere.service.IOrderLineBL;
 import de.metas.currency.ICurrencyDAO;
+import de.metas.i18n.IMsgBL;
 import de.metas.impex.api.IInputDataSourceDAO;
 import de.metas.impex.model.I_AD_InputDataSource;
 import de.metas.interfaces.I_C_OrderLine;
@@ -260,7 +260,7 @@ public class OLCandBL implements IOLCandBL
 					final MNote note = new MNote(ctx, IOLCandBL.MSG_OL_CAND_PROCESSOR_PROCESSING_ERROR_0P, userInChargeId, ITrx.TRXNAME_None);
 					note.setRecord(adTableDAO.retrieveTableId(I_C_OLCand.Table_Name), candOfGroup.getC_OLCand_ID());
 
-					final I_AD_User user = userDAO.retrieveUser(ctx, userInChargeId);
+					final I_AD_User user = userDAO.retrieveUserOrNull(ctx, userInChargeId);
 					note.setClientOrg(user.getAD_Client_ID(), user.getAD_Org_ID());
 
 					note.setTextMsg(e.getLocalizedMessage());
@@ -341,7 +341,7 @@ public class OLCandBL implements IOLCandBL
 				final MNote note = new MNote(ctx, IOLCandBL.MSG_OL_CAND_PROCESSOR_PROCESSING_ERROR_0P, userInChargeId, trxName);
 
 				final IUserDAO userDAO = Services.get(IUserDAO.class);
-				final I_AD_User user = userDAO.retrieveUser(ctx, userInChargeId);
+				final I_AD_User user = userDAO.retrieveUserOrNull(ctx, userInChargeId);
 
 				note.setClientOrg(user.getAD_Client_ID(), user.getAD_Org_ID());
 

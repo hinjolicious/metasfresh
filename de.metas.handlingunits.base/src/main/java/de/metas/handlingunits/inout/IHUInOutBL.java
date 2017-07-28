@@ -1,6 +1,7 @@
 package de.metas.handlingunits.inout;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 /*
@@ -29,12 +30,10 @@ import java.util.Properties;
 
 import org.adempiere.util.ISingletonService;
 import org.compiere.model.I_M_InOut;
-import org.compiere.model.I_M_Warehouse;
 
 import de.metas.handlingunits.impl.IDocumentLUTUConfigurationManager;
 import de.metas.handlingunits.inout.impl.HUShipmentPackingMaterialLinesBuilder;
 import de.metas.handlingunits.model.I_M_HU;
-import de.metas.handlingunits.model.I_M_HU_Assignment;
 import de.metas.handlingunits.model.I_M_HU_PI;
 import de.metas.handlingunits.model.I_M_InOutLine;
 import de.metas.inoutcandidate.spi.impl.HUPackingMaterialDocumentLineCandidate;
@@ -104,41 +103,52 @@ public interface IHUInOutBL extends ISingletonService
 	void updateEffectiveValues(I_M_InOutLine shipmentLine);
 
 	/**
-	 * Create a new instance of <code>de.metas.handlingunits.inout.impl.QualityReturnsInOutProducer)</code>
+	 * Create vendor return inouts for products of precarious quality based on the details of the given HUs
 	 * 
-	 * @param ctx
 	 * @param hus
-	 * @return
-	 */
-	IReturnsInOutProducer createQualityReturnsInOutProducer(Properties ctx, List<I_M_HU_Assignment> huAssignments);
-
-	/**
-	 * Create return inouts for products of precarious quality based on the details of the given HUs
-	 * 
-	 * 
-	 * @param ctx
-	 * @param hus
-	 * @param warehouse
 	 * @param movementDate
 	 * @return
 	 */
-	List<de.metas.handlingunits.model.I_M_InOut> createReturnInOutForHUs(Properties ctx, List<I_M_HU> hus, I_M_Warehouse warehouse, Timestamp movementDate);
+	List<de.metas.handlingunits.model.I_M_InOut> createVendorReturnInOutForHUs(List<I_M_HU> hus, Timestamp movementDate);
 
 	IDocumentLUTUConfigurationManager createLUTUConfigurationManager(List<I_M_InOutLine> inOutLines);
 
 	IDocumentLUTUConfigurationManager createLUTUConfigurationManager(I_M_InOutLine inOutLine);
 
 	/**
-	 * @param customerReturn
+	 * @param inOut
 	 * @return True if the given inOut is a Customer Return, False otherwise
 	 */
-	boolean isCustomerReturn(I_M_InOut customerReturn);
+	boolean isCustomerReturn(I_M_InOut inOut);
 
 	/**
-	 * @param customerReturn
+	 * @param inOut
+	 * @return True if the given inOut is a Vendor Return, False otherwise
 	 */
-	void createHUsForCustomerReturn(I_M_InOut customerReturn);
+	boolean isVendorReturn(I_M_InOut inOut);
 
-	void createHUsForCustomerReturn(I_M_InOutLine customerReturnLine);
+	/**
+	 * Create HUs for manual customer return inout.
+	 * 
+	 * @param customerReturn
+	 * @return
+	 */
+	List<I_M_HU> createHUsForCustomerReturn(final de.metas.handlingunits.model.I_M_InOut customerReturn);
+
+	/**
+	 * Create Return From Vendor documents for the given HUs
+	 * 
+	 * @param hus
+	 * @return
+	 */
+	List<de.metas.handlingunits.model.I_M_InOut> createCustomerReturnInOutForHUs(Collection<I_M_HU> hus);
+
+	/**
+	 * Create movements to QualityIssue warehouse for the given hus
+	 * 
+	 * @param ctx
+	 * @param husToReturn
+	 */
+	void moveHUsForCustomerReturn(Properties ctx, List<I_M_HU> husToReturn);
 
 }

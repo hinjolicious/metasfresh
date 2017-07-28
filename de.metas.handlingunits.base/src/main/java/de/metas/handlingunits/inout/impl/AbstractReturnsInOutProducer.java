@@ -28,7 +28,6 @@ import java.util.Properties;
 
 import org.adempiere.ad.trx.api.ITrx;
 import org.adempiere.ad.trx.api.ITrxManager;
-import org.adempiere.ad.trx.api.TrxCallable;
 import org.adempiere.bpartner.service.IBPartnerDAO;
 import org.adempiere.model.IContextAware;
 import org.adempiere.model.InterfaceWrapperHelper;
@@ -48,6 +47,7 @@ import de.metas.adempiere.model.I_C_BPartner_Location;
 import de.metas.document.engine.IDocActionBL;
 import de.metas.handlingunits.inout.IReturnsInOutProducer;
 import de.metas.handlingunits.model.I_M_HU_PackingMaterial;
+import lombok.NonNull;
 
 public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProducer
 {
@@ -57,7 +57,7 @@ public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProdu
 	private final transient IDocActionBL docActionBL = Services.get(IDocActionBL.class);
 	protected final transient ITrxManager trxManager = Services.get(ITrxManager.class);
 
-	protected Properties _ctx;
+	protected final Properties _ctx;
 	protected boolean executed = false;
 
 	protected I_C_BPartner _bpartner = null;
@@ -67,13 +67,15 @@ public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProdu
 	private Date _movementDate = null;
 	private boolean _complete = true;
 
+	protected I_M_InOut _manualReturnInOut = null;
+
 	/** #643 The order on based on which the empties inout is created (if it was selected) */
 	private I_C_Order _order = null;
 
 	/** InOut header reference. It will be created just when it is needed. */
 	protected final LazyInitializer<I_M_InOut> inoutRef = LazyInitializer.of(() -> createInOutHeader());
 
-	public void setCtx(final Properties ctx)
+	protected AbstractReturnsInOutProducer(@NonNull final Properties ctx)
 	{
 		this._ctx = ctx;
 	}
@@ -97,21 +99,7 @@ public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProdu
 	public I_M_InOut create()
 	{
 		final ITrxManager trxManager = Services.get(ITrxManager.class);
-		return trxManager.call(new TrxCallable<I_M_InOut>()
-		{
-
-			@Override
-			public I_M_InOut call() throws Exception
-			{
-				return createInTrx();
-			}
-
-			@Override
-			public boolean doCatch(Throwable e) throws Throwable
-			{
-				throw e;
-			}
-		});
+		return trxManager.call(this::createInTrx);
 	}
 
 	private I_M_InOut createInTrx()
@@ -140,8 +128,11 @@ public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProdu
 				// nothing created
 				return null;
 			}
-
+			
+		
 			docActionBL.processEx(inout, DocAction.ACTION_Complete, DocAction.STATUS_Completed);
+
+			afterInOutProcessed(inout);
 
 			return inout;
 		}
@@ -154,6 +145,11 @@ public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProdu
 			InterfaceWrapperHelper.save(inout);
 			return inout;
 		}
+	}
+
+	protected void afterInOutProcessed(final I_M_InOut inout)
+	{
+		// nothing at this level
 	}
 
 	@Override
@@ -191,6 +187,12 @@ public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProdu
 
 	protected I_M_InOut createInOutHeader()
 	{
+		// #1306: If the inout was already manually created ( customer return case)  return it as it is, do not create a new document/
+		if (_manualReturnInOut != null)
+		{
+			return _manualReturnInOut;
+		}
+		
 		final IContextAware contextProvider = getContextProvider();
 
 		final I_M_InOut emptiesInOut = InterfaceWrapperHelper.newInstance(I_M_InOut.class, contextProvider);
@@ -264,6 +266,14 @@ public abstract class AbstractReturnsInOutProducer implements IReturnsInOutProdu
 		assertConfigurable();
 
 		_movementType = movementType;
+		return this;
+	}
+
+	public IReturnsInOutProducer setManualReturnInOut(final I_M_InOut manualReturnInOut)
+	{
+		assertConfigurable();
+		_manualReturnInOut = manualReturnInOut;
+
 		return this;
 	}
 

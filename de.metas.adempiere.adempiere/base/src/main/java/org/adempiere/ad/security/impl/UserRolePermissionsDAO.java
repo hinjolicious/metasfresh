@@ -66,6 +66,7 @@ import org.compiere.model.I_AD_Table_Access;
 import org.compiere.model.I_AD_Task;
 import org.compiere.model.I_AD_Task_Access;
 import org.compiere.model.I_AD_User_OrgAccess;
+import org.compiere.model.I_AD_User_Roles;
 import org.compiere.model.I_AD_Window;
 import org.compiere.model.I_AD_Window_Access;
 import org.compiere.model.I_AD_Workflow;
@@ -91,6 +92,7 @@ public class UserRolePermissionsDAO implements IUserRolePermissionsDAO
 
 	private static final Set<String> ROLE_DEPENDENT_TABLENAMES = ImmutableSet.of(
 			// I_AD_Role.Table_Name // NEVER include the AD_Role
+			I_AD_User_Roles.Table_Name, // User to Role assignment (see https://github.com/metasfresh/metasfresh-webui-api/issues/482)
 			// Included role
 			I_AD_Role_Included.Table_Name,
 			// Org Access
@@ -174,8 +176,8 @@ public class UserRolePermissionsDAO implements IUserRolePermissionsDAO
 			version.incrementAndGet();
 			
 			final CacheMgt cacheManager = CacheMgt.get();
-			cacheManager.reset(I_AD_Role.Table_Name); // cache reset role itself
-			ROLE_DEPENDENT_TABLENAMES.forEach(cacheManager::reset);
+			cacheManager.resetLocal(I_AD_Role.Table_Name); // cache reset role itself
+			ROLE_DEPENDENT_TABLENAMES.forEach(cacheManager::resetLocal);
 			logger.info("Finished permissions cache reset");
 		}
 		finally
@@ -228,6 +230,12 @@ public class UserRolePermissionsDAO implements IUserRolePermissionsDAO
 		}
 
 		return Optional.absent();
+	}
+
+	@Override
+	public boolean isAdministrator(final Properties ctx, final int adUserId)
+	{
+		return matchUserRolesPermissionsForUser(ctx, adUserId, IUserRolePermissions::isSystemAdministrator);
 	}
 
 	@Override
@@ -1272,10 +1280,10 @@ public class UserRolePermissionsDAO implements IUserRolePermissionsDAO
 	public Set<Integer> retrievePrivateAccessRecordIds(final int adUserId, final int adTableId)
 	{
 		final String sql = "SELECT Record_ID "
-				+ "FROM " + I_AD_Private_Access.Table_Name
-				+ "WHERE AD_User_ID=? AND AD_Table_ID=? AND IsActive='Y' "
-				+ "ORDER BY Record_ID";
-		final Object[] sqlParams = new Object[] { adUserId, adTableId };
+				+ " FROM " + I_AD_Private_Access.Table_Name
+				+ " WHERE AD_User_ID=? AND AD_Table_ID=? AND IsActive=? "
+				+ " ORDER BY Record_ID";
+		final Object[] sqlParams = new Object[] { adUserId, adTableId, true };
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try

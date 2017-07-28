@@ -47,7 +47,6 @@ import org.adempiere.model.InterfaceWrapperHelper;
 import org.adempiere.util.Check;
 import org.adempiere.util.LegacyAdapters;
 import org.adempiere.util.Services;
-import org.adempiere.util.api.IMsgBL;
 import org.adempiere.util.time.SystemTime;
 import org.compiere.print.ReportEngine;
 import org.compiere.process.DocAction;
@@ -55,8 +54,8 @@ import org.compiere.util.CCache;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.slf4j.Logger;
-import org.slf4j.Logger;
 
+import de.metas.adempiere.model.I_AD_User;
 import de.metas.adempiere.model.I_C_Order;
 import de.metas.allocation.api.IAllocationDAO;
 import de.metas.currency.ICurrencyBL;
@@ -64,9 +63,9 @@ import de.metas.currency.ICurrencyDAO;
 import de.metas.document.documentNo.IDocumentNoBuilder;
 import de.metas.document.documentNo.IDocumentNoBuilderFactory;
 import de.metas.document.engine.IDocActionBL;
+import de.metas.i18n.IMsgBL;
 import de.metas.i18n.Msg;
 import de.metas.invoice.IMatchInvBL;
-import de.metas.logging.LogManager;
 import de.metas.logging.LogManager;
 import de.metas.prepayorder.service.IPrepayOrderAllocationBL;
 import de.metas.tax.api.ITaxBL;
@@ -450,10 +449,10 @@ public class MInvoice extends X_C_Invoice implements DocAction
 		}
 
 		// Set Contact
-		MUser[] contacts = bp.getContacts(false);
-		if (contacts != null && contacts.length > 0) 	// get first User
+		List<I_AD_User> contacts = bp.getContacts(false);
+		if (contacts != null && contacts.size() > 0) 	// get first User
 		{
-			setAD_User_ID(contacts[0].getAD_User_ID());
+			setAD_User_ID(contacts.get(0).getAD_User_ID());
 		}
 	}	// setBPartner
 

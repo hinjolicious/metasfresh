@@ -14,6 +14,7 @@ import org.adempiere.model.InterfaceWrapperHelper;
 import org.adempiere.util.Check;
 import org.adempiere.util.Loggables;
 import org.adempiere.util.Services;
+import org.compiere.model.I_AD_Element;
 import org.compiere.model.I_AD_Field;
 import org.compiere.model.I_AD_Tab;
 import org.compiere.model.I_AD_UI_Column;
@@ -41,11 +42,11 @@ import de.metas.process.JavaProcess;
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  * #L%
  */
@@ -352,7 +353,7 @@ public class AD_Window_CreateUIElements extends JavaProcess
 		{
 			final I_AD_UI_Section uiSection = InterfaceWrapperHelper.newInstance(I_AD_UI_Section.class, adTab);
 			uiSection.setAD_Tab(adTab);
-			uiSection.setName("main"); // FIXME hardcoded
+			uiSection.setValue("main"); // FIXME hardcoded
 			uiSection.setSeqNo(seqNo);
 
 			consumer.consume(uiSection, adTab);
@@ -405,6 +406,10 @@ public class AD_Window_CreateUIElements extends JavaProcess
 
 			uiElement.setIsDisplayed_SideList(false);
 			uiElement.setSeqNo_SideList(0);
+			
+			// #1019 set the widget size in the UI element if it was set in the original element
+			final I_AD_Element element = adField.getAD_Column().getAD_Element();
+			uiElement.setWidgetSize(element.getWidgetSize());
 
 			return uiElement;
 		}

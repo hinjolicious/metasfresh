@@ -37,12 +37,13 @@ import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.slf4j.Logger;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 
+import de.metas.i18n.po.POTrlInfo;
+import de.metas.i18n.po.POTrlRepository;
 import de.metas.logging.LogManager;
 
 /**
@@ -167,9 +168,10 @@ public final class POInfo implements Serializable
 
 	private static final transient Logger logger = LogManager.getLogger(POInfo.class);
 
+	public static final String CACHE_PREFIX = "POInfo";
 	/** Cache of POInfo */
-	private static final CCache<Integer, Optional<POInfo>> s_cache = new CCache<>("POInfo", 200);
-	private static final CCache<String, Optional<POInfo>> s_cacheByTableNameUC = new CCache<>("POInfo_ByTableName", 200);
+	private static final CCache<Integer, Optional<POInfo>> s_cache = new CCache<>(CACHE_PREFIX, 200);
+	private static final CCache<String, Optional<POInfo>> s_cacheByTableNameUC = new CCache<>(CACHE_PREFIX + "#ByTableName", 200);
 
 	private POInfo(final String tableName, final String trxName)
 	{
@@ -227,16 +229,14 @@ public final class POInfo implements Serializable
 	private String sqlSelectColumns;
 	private String sqlSelect;
 
-	//
-	// Translation info
-	public static final String COLUMNNAME_AD_Language = "AD_Language";
-	/**
-	 * True if at least one column is translated
-	 */
-	private boolean translated = false;
-	private ImmutableList<String> translatedColumnNames = null; // built on demand
-	private Optional<String> sqlSelectTrlByIdAndLanguage;  // built on demand
-	private Optional<String> sqlSelectTrlById;  // built on demand
+	private POTrlInfo trlInfo;
+//	/**
+//	 * True if at least one column is translated
+//	 */
+//	private boolean translated = false;
+//	private ImmutableList<String> translatedColumnNames = null; // built on demand
+//	private Optional<String> sqlSelectTrlByIdAndLanguage;  // built on demand
+//	private Optional<String> sqlSelectTrlById;  // built on demand
 
 	/**
 	 * Load Table/Column Info into this instance. If the select returns no result, nothing is loaded and no error is raised.
@@ -390,7 +390,7 @@ public final class POInfo implements Serializable
 		// and ofc in SQL queries could be with ANY case...
 		final ImmutableSortedMap.Builder<String, Integer> columnName2columnIndexBuilder = ImmutableSortedMap.orderedBy(String.CASE_INSENSITIVE_ORDER);
 		final ImmutableMap.Builder<Integer, Integer> adColumnId2columnIndexBuilder = ImmutableMap.<Integer, Integer> builder();
-		this.translated = false;
+		final List<String> translatedColumnNames = new ArrayList<>();
 		for (int columnIndex = 0; columnIndex < columnsCount; columnIndex++)
 		{
 			final POInfoColumn columnInfo = m_columns[columnIndex];
@@ -400,9 +400,9 @@ public final class POInfo implements Serializable
 			columnName2columnIndexBuilder.put(columnName, columnIndex);
 			adColumnId2columnIndexBuilder.put(adColumnId, columnIndex);
 
-			if (!this.translated && columnInfo.isTranslated())
+			if (columnInfo.isTranslated())
 			{
-				this.translated = true;
+				translatedColumnNames.add(columnName);
 			}
 		}
 		this.columnName2columnIndex = columnName2columnIndexBuilder.build();
@@ -445,6 +445,8 @@ public final class POInfo implements Serializable
 		sqlSelect = buildSqlSelect();
 		sqlWhereClauseByKeys = buildSqlWhereClauseByKeys();
 		sqlSelectByKeys = buildSqlSelectByKeys();
+		
+		trlInfo = POTrlRepository.instance.createPOTrlInfo(m_TableName, m_keyColumnName, translatedColumnNames);
 	}   // loadInfo
 
 	/**
@@ -1033,29 +1035,6 @@ public final class POInfo implements Serializable
 	}
 
 	/**
-	 * Is Column Translated
-	 * 
-	 * @param index index
-	 * @return true if column is translated
-	 */
-	public boolean isColumnTranslated(int index)
-	{
-		if (index < 0 || index >= m_columns.length)
-			return false;
-		return m_columns[index].isTranslated();
-	}   // isColumnTranslated
-
-	/**
-	 * Is Table Translated
-	 * 
-	 * @return true if table is translated
-	 */
-	public boolean isTranslated()
-	{
-		return this.translated;
-	}   // isTranslated
-
-	/**
 	 * Is Column (data) Encrypted
 	 * 
 	 * @param index index
@@ -1442,92 +1421,12 @@ public final class POInfo implements Serializable
 	 */
 	public List<String> getTranslatedColumnNames()
 	{
-		if (translatedColumnNames == null)
-		{
-			if (isTranslated())
-			{
-				final ImmutableList.Builder<String> columnNames = ImmutableList.builder();
-				for (final POInfoColumn columnInfo : this.m_columns)
-				{
-					if (!columnInfo.isTranslated())
-					{
-						continue;
-					}
-
-					columnNames.add(columnInfo.getColumnName());
-				}
-
-				translatedColumnNames = columnNames.build();
-			}
-			else
-			{
-				translatedColumnNames = ImmutableList.of();
-			}
-		}
-		return translatedColumnNames;
+		return trlInfo.getTranslatedColumnNames();
 	}
-
-	/**
-	 * @return <code>SELECT * FROM TableName_Trl WHERE KeyColumnName=? AND AD_Language=?</code> or <code>null</code>
-	 */
-	public String getSqlSelectTrlByIdAndLanguage()
+	
+	public POTrlInfo getTrlInfo()
 	{
-		if (sqlSelectTrlByIdAndLanguage == null)
-		{
-			sqlSelectTrlByIdAndLanguage = buildSqlSelectTrl(true); // byLanguageToo=true
-		}
-		return sqlSelectTrlByIdAndLanguage.orNull();
+		return trlInfo;
 	}
 
-	/**
-	 * @return <code>SELECT * FROM TableName_Trl WHERE KeyColumnName=?</code> or <code>null</code>
-	 */
-	public String getSqlSelectTrlById()
-	{
-		if (sqlSelectTrlById == null)
-		{
-			sqlSelectTrlById = buildSqlSelectTrl(false); // byLanguageToo=false
-		}
-		return sqlSelectTrlById.orNull();
-	}
-
-	/**
-	 * Builds the SQL to select from translation table (i.e. <code>SELECT * FROM TableName_Trl WHERE KeyColumnName=? [AND AD_Language=?]</code>)
-	 * 
-	 * @param byLanguageToo if <code>true</code> the returned SQL shall also filter by "AD_Language"
-	 * @return
-	 * 		<ul>
-	 *         <li>SQL select
-	 *         <li>or {@link Optional#absent()} if table is not translatable or there are no translation columns
-	 *         </ul>
-	 */
-	private Optional<String> buildSqlSelectTrl(final boolean byLanguageToo)
-	{
-		final String keyColumnName = getKeyColumnName(); // assume not null
-		if (keyColumnName == null)
-		{
-			return Optional.absent();
-		}
-
-		final List<String> columnNames = getTranslatedColumnNames(); // assume not empty
-		if (columnNames.isEmpty())
-		{
-			return Optional.absent();
-		}
-
-		final String sqlColumns = Joiner.on(",").join(columnNames);
-		StringBuilder sql = new StringBuilder("SELECT ")
-				.append(sqlColumns)
-				.append(", ").append(COLUMNNAME_AD_Language)
-				.append(" FROM ").append(getTableName()).append("_Trl")
-				.append(" WHERE ")
-				.append(keyColumnName).append("=?");
-
-		if (byLanguageToo)
-		{
-			sql.append(" AND ").append(COLUMNNAME_AD_Language).append("=?");
-		}
-
-		return Optional.of(sql.toString());
-	}
 }   // POInfo

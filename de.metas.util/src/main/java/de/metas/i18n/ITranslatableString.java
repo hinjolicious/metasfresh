@@ -1,6 +1,7 @@
 package de.metas.i18n;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -26,7 +27,8 @@ import java.util.Set;
  */
 
 /**
- * A string which can be translated to a given <code>AD_Language</code>.
+ * A string which can be translated to a given <code>AD_Language</code>.<br>
+ * You can use e.g. {@link IMsgBL#getTranslatableMsgText(String, Object...)} to obtain an instance.
  * 
  * @author metas-dev <dev@metasfresh.com>
  *
@@ -34,6 +36,11 @@ import java.util.Set;
 public interface ITranslatableString
 {
 	public static ITranslatableString compose(final ITranslatableString... trls)
+	{
+		return compose(""/* joinString */, trls);
+	}
+
+	public static ITranslatableString compose(final String joiningString, final ITranslatableString... trls)
 	{
 		if (trls == null || trls.length == 0)
 		{
@@ -45,7 +52,32 @@ public interface ITranslatableString
 			return trls[0];
 		}
 
-		return new CompositeTranslatableString(Arrays.asList(trls));
+		return new CompositeTranslatableString(Arrays.asList(trls), joiningString);
+	}
+
+	public static ITranslatableString compose(final String joiningString, final List<ITranslatableString> trls)
+	{
+		if (trls == null || trls.isEmpty())
+		{
+			throw new IllegalArgumentException("trls is null or empty");
+		}
+
+		if (trls.size() == 1)
+		{
+			return trls.get(0);
+		}
+
+		return new CompositeTranslatableString(trls, joiningString);
+	}
+
+	public static ITranslatableString constant(final String value)
+	{
+		return ImmutableTranslatableString.constant(value);
+	}
+
+	public static ITranslatableString empty()
+	{
+		return ImmutableTranslatableString.empty();
 	}
 
 	public String translate(final String adLanguage);

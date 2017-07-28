@@ -18,9 +18,9 @@ import de.metas.material.event.EventDescr;
 import de.metas.material.event.MaterialEventService;
 import de.metas.material.event.ddorder.DDOrder;
 import de.metas.material.event.ddorder.DDOrder.DDOrderBuilder;
+import de.metas.material.event.ddorder.DDOrderLine;
 import de.metas.material.planning.ddorder.DDOrderUtil;
 import de.metas.storage.StorageUtil;
-import de.metas.material.event.ddorder.DDOrderLine;
 
 /**
  * A dedicated model interceptor whose job it is to fire events on the {@link MaterialEventService}.<br>

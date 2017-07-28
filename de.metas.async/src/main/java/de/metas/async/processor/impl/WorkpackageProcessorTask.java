@@ -42,7 +42,6 @@ import org.adempiere.util.ILoggable;
 import org.adempiere.util.Loggables;
 import org.adempiere.util.Services;
 import org.adempiere.util.StringUtils;
-import org.adempiere.util.api.IMsgBL;
 import org.adempiere.util.api.IParams;
 import org.adempiere.util.lang.IAutoCloseable;
 import org.adempiere.util.lang.IMutable;
@@ -74,6 +73,7 @@ import de.metas.async.processor.IQueueProcessor;
 import de.metas.async.processor.IWorkpackageSkipRequest;
 import de.metas.async.spi.IWorkpackageProcessor;
 import de.metas.async.spi.IWorkpackageProcessor.Result;
+import de.metas.i18n.IMsgBL;
 import de.metas.async.spi.IWorkpackageProcessor2;
 import de.metas.lock.api.ILock;
 import de.metas.lock.api.ILockManager;
@@ -393,7 +393,7 @@ import de.metas.notification.INotificationBL;
 
 		final Timestamp skippedAt = SystemTime.asTimestamp();
 		final Exception skipException = skipRequest.getException();
-		final I_AD_Issue issue = skipException == null ? null : Services.get(IErrorManager.class).createIssue(null, skipException);
+//		final I_AD_Issue issue = skipException == null ? null : Services.get(IErrorManager.class).createIssue(null, skipException); // gh #160 : do not create ad_issue
 		final int skippedCount = workPackage.getSkipped_Count();
 
 		final int skipTimeoutMillis = skipRequest.getSkipTimeoutMillis() > 0 ? skipRequest.getSkipTimeoutMillis() : Async_Constants.DEFAULT_RETRY_TIMEOUT_MILLIS;
@@ -401,7 +401,7 @@ import de.metas.notification.INotificationBL;
 		workPackage.setProcessed(false); // just in case it was true
 		workPackage.setIsError(false); // just in case it was true
 		workPackage.setSkipped_Last_Reason(skipRequest.getSkipReason());
-		workPackage.setAD_Issue(issue);
+//		workPackage.setAD_Issue(issue); // gh #160 : do not create ad_issue
 		workPackage.setSkippedAt(skippedAt);
 		workPackage.setSkipTimeoutMillis(skipTimeoutMillis);
 		workPackage.setSkipped_Count(skippedCount + 1);

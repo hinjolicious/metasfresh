@@ -26,7 +26,6 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import org.adempiere.ad.service.IDeveloperModeBL;
 import org.adempiere.util.Check;
 import org.adempiere.util.Services;
-import org.adempiere.util.api.IMsgBL;
 import org.adempiere.util.logging.LoggingHelper;
 import org.compiere.util.Env;
 import org.slf4j.Logger;
@@ -34,6 +33,7 @@ import org.slf4j.Logger;
 import com.google.common.collect.ImmutableMap;
 
 import ch.qos.logback.classic.Level;
+import de.metas.i18n.IMsgBL;
 import de.metas.i18n.Language;
 import de.metas.logging.MetasfreshLastError;
 import lombok.NonNull;
@@ -187,6 +187,8 @@ public class AdempiereException extends RuntimeException
 	public AdempiereException(final String language, final String adMessage, final Object[] params)
 	{
 		super(Services.get(IMsgBL.class).getMsg(language, adMessage, params));
+		setParameter("AD_Language", language);
+		setParameter("AD_Message", adMessage);
 	}
 
 	public AdempiereException(final Properties ctx, final String adMessage, final Object[] params)

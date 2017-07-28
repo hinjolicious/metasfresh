@@ -14,7 +14,7 @@ public class X_M_HU extends org.compiere.model.PO implements I_M_HU, org.compier
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = -170404471L;
+	private static final long serialVersionUID = -1044082489L;
 
     /** Standard Constructor */
     public X_M_HU (Properties ctx, int M_HU_ID, String trxName)
@@ -22,10 +22,7 @@ public class X_M_HU extends org.compiere.model.PO implements I_M_HU, org.compier
       super (ctx, M_HU_ID, trxName);
       /** if (M_HU_ID == 0)
         {
-			setHUStatus (null);
-// 'P'
-			setLocked (false);
-// N
+			setHUStatus (null); // 'P'
 			setM_HU_ID (0);
 			setM_HU_PI_Version_ID (0);
 			setValue (null);
@@ -209,8 +206,7 @@ public class X_M_HU extends org.compiere.model.PO implements I_M_HU, org.compier
 	@Override
 	public void setLocked (boolean Locked)
 	{
-		set_Value (COLUMNNAME_Locked, Boolean.valueOf(Locked));
-	}
+		throw new IllegalArgumentException ("Locked is virtual column");	}
 
 	/** Get Gesperrt.
 		@return Gesperrt	  */
