@@ -10,9 +10,9 @@ Additional notes:
 
 Here come the actual release notes:
 
-# metasfresh 5.20 (2017-31)
+# metasfresh 5.21 (2017-32)
 
-**upcoming release for week 2017-30**
+**upcoming release for week 2017-32**
 
 ## Features
 * metasfresh-app
@@ -28,6 +28,77 @@ Here come the actual release notes:
 
 * metasfresh-webui-frontend
 
+# metasfresh 5.20 (2017-31)
+
+**upcoming release for week 2017-31**
+
+## Features
+* metasfresh-app
+  * [#1994](https://github.com/metasfresh/metasfresh/issues/1994) Adjust Sales Invoice Window
+    * Finetuning for the Sales Invoice Window to adjust the Layout to meet our current Look And Feel concept.
+  * [#2019](https://github.com/metasfresh/metasfresh/issues/2019) Add Widget Size to System Elements
+  * [#2029](https://github.com/metasfresh/metasfresh/issues/2029) New Window for Accounts and Elements in WebUI
+    * New Window for the maintenance of Account Elements in WebUI
+  * [#2032](https://github.com/metasfresh/metasfresh/issues/2032) Layout for Handling Unit Editor Window in WebUI
+    * Refined Layout for the Detail Views in Handling Unit Editor Window of WebUI.
+  * [#2042](https://github.com/metasfresh/metasfresh/issues/2042) Process to Update Widget Size in all child UI Elements of a System Element
+  * [#2046](https://github.com/metasfresh/metasfresh/issues/2046) Window Design WebUI: Attribute Set
+  * [#2049](https://github.com/metasfresh/metasfresh/issues/2049) Window Design WebUI: Purchase Order
+    * Adopting the Purchase Order Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2052](https://github.com/metasfresh/metasfresh/issues/2052) Window Design WebUI: Price System
+    * Adopting the Price System Window to the current Window Concept for Master Data in metasfresh WebUI
+  * [#2053](https://github.com/metasfresh/metasfresh/issues/2053) Window Design WebUI: Inventory Move
+    * Adopting the Inventory Move Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2058](https://github.com/metasfresh/metasfresh/issues/2058) Change AD_Table_ID Identifier to Name only
+    * Changing the Identifier for AD_Table from TableName + Name to Name only. This allows a better readability for the user.
+  * [#2066](https://github.com/metasfresh/metasfresh/issues/2066) CRM: Businesspartner B2C Reminder Functionality
+  * [#2067](https://github.com/metasfresh/metasfresh/issues/2067) switch between C_Order_MFGWarehouse with and without barcode
+  * [#2069](https://github.com/metasfresh/metasfresh/issues/2069) Window Design WebUI: Bill of Materials
+  * [#2071](https://github.com/metasfresh/metasfresh/issues/2071) Window Design WebUI: Payment Window
+    * Adopting the Payment Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2074](https://github.com/metasfresh/metasfresh/issues/2074) CRM: Document List in Subtab Functionality
+  * [#2077](https://github.com/metasfresh/metasfresh/issues/2077) Window Design WebUI: Payment Allocation Window
+    * Adopting the Payment Allocation Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2080](https://github.com/metasfresh/metasfresh/issues/2080) Window Design WebUI: Payment Allocation Translation en_US
+    * Adopting the Payment Allocation Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2083](https://github.com/metasfresh/metasfresh/issues/2083) Window Design WebUI: Customer Returns
+  * [#2092](https://github.com/metasfresh/metasfresh/issues/2092) Scheduler - improve error handling if AD_Role_ID can't be found
+  * [#2096](https://github.com/metasfresh/metasfresh/issues/2096) Businesspartner B2C Location Editor missing
+    * Adjustments for the Businesspartner B2C Window, adding missing Fields and Layout.
+
+* metasfresh-webui-api
+  * [#503](https://github.com/metasfresh/metasfresh-webui-api/issues/503) Picking prototype (v5)
+  * [#514](https://github.com/metasfresh/metasfresh-webui-api/issues/514) Support HU transform from HU window
+  * [#518](https://github.com/metasfresh/metasfresh-webui-api/issues/518) Picking prototype (v6)
+
+* metasfresh-webui-frontend
+  * [#1031](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1031) Autoselect when doubleclick on included Tab Row Field
+  * [#1061](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1061) Larger Avatar Menu Photo
+  * [#1084](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1084) Handle websocket document stale event
+
+## Fixes
+* metasfresh-app
+
+* metasfresh-webui-api
+  * [#496](https://github.com/metasfresh/metasfresh-webui-api/issues/496) String document IDs cannot be converted to int Handling Unit Editor
+  * [#511](https://github.com/metasfresh/metasfresh-webui-api/issues/511) Problems with Sales Opportunities Board
+  * [#516](https://github.com/metasfresh/metasfresh-webui-api/issues/516) moving 1 TU from one LU to another
+
+* metasfresh-webui-frontend
+  * [#1026](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1026) grid: Get rid of double scrollbar
+  * [#1027](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1027) line looks selected, but it's not
+  * [#1045](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1045) frontend shall switch to offline mode on http 503 error
+  * [#1046](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1046) opening included view from action not working in picking
+  * [#1052](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1052) Breadcrumb of "Sales Opportunities" board is incorrect
+  * [#1062](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1062) Avatar Foto stretches when not Square
+  * [#1065](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1065) Window title wrong for windows in deeper menu hierarchy
+    * Fix for the Window Name in Action Menu, that was not shown properly for Windows in deeper Menu Hierarchy.
+  * [#1067](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1067) board: add new: don't show the loading icon after data is loaded
+  * [#1068](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1068) board: when there are no new cards show the empty result text/hint
+  * [#1073](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1073) Bug in Advanced edit of Purchase order
+  * [#1078](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1078) Wrong quickActions call when opening HU editor
+  * [#1094](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1094) Error on document websocket event
+
 # metasfresh 5.19 (2017-30)
 
 **upcoming release for week 2017-30**
@@ -35,6 +106,7 @@ Here come the actual release notes:
 ## Features
 * metasfresh-app
   * [#525](https://github.com/metasfresh/metasfresh/issues/525) Retraceability Transparency for Product Lifecycle
+    * New improved Functionality for retraceability in mtefasresh. Now allowing to analyze the material paths in no time.
   * [#1993](https://github.com/metasfresh/metasfresh/issues/1993) Set default Widget width for certain Columns
     * Refining and Harmonizing the Widget width of columns in GridView for those, where generic width according to their widget type does not match to the user requirement or field content.
   * [#1995](https://github.com/metasfresh/metasfresh/issues/1995) Language Names too Long
@@ -48,6 +120,7 @@ Here come the actual release notes:
   * [#2009](https://github.com/metasfresh/metasfresh/issues/2009) Feedback WebUI Prices
     * Further Layout Adjustments to Pricelist and Product Price window in WebUI.
   * [#2012](https://github.com/metasfresh/metasfresh/issues/2012) import messages
+    * New import of static massages for webUI.
   * [#2015](https://github.com/metasfresh/metasfresh/issues/2015) Create Window Price List Schema in WebUI
     * Adjusting the Layout for Price List Schema Window in WebUI
   * [#2017](https://github.com/metasfresh/metasfresh/issues/2017) Create Window Pricing Rule in WebUI
@@ -55,12 +128,15 @@ Here come the actual release notes:
   * [#2020](https://github.com/metasfresh/metasfresh/issues/2020) Add System Configuration Window to WebUI
     * New Window for System Configuration in WebUI.
   * [#2022](https://github.com/metasfresh/metasfresh/issues/2022) Create Window Textvariablen in WebUI
+    * New Window for Boilerplate Variables in WebUI.
   * [#2023](https://github.com/metasfresh/metasfresh/issues/2023) Create Window Textbausteinein WebUI
+    * New Window for Boilerplate Text Elements in WebUI.
   * [#2027](https://github.com/metasfresh/metasfresh/issues/2027) Fine Tuning of Window Bankaccount in WebUI
     * Various Adjustments to the Bankaccount Window in WebUI.
   * [#2028](https://github.com/metasfresh/metasfresh/issues/2028) New Window for Validcombination in WebUI
     * New Window in WebUI thats allows the user to maintain the valid Account Combinations.
   * [#2038](https://github.com/metasfresh/metasfresh/issues/2038) Adjusted Business Partner Window for Small Companies
+    * New Business Partner Window for B2C Companies.
 
 * metasfresh-webui-api
   * [#506](https://github.com/metasfresh/metasfresh-webui-api/issues/506) view: accept included referencing documents when creating a new view

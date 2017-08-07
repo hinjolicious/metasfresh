@@ -1,10 +1,13 @@
-package org.adempiere.service.impl;
+package org.adempiere.ad.element.api;
+
+import org.adempiere.util.ISingletonService;
+import org.compiere.model.I_AD_Element;
 
 /*
  * #%L
  * de.metas.adempiere.adempiere.base
  * %%
- * Copyright (C) 2015 metas GmbH
+ * Copyright (C) 2017 metas GmbH
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,8 +25,8 @@ package org.adempiere.service.impl;
  * #L%
  */
 
-
-public class AttachmentDAO extends AbstractAttachmentDAO
+public interface IElementBL extends ISingletonService
 {
 
+	public void updateUIElement( I_AD_Element element);
 }
