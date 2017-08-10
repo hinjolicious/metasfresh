@@ -10,20 +10,12 @@ Additional notes:
 
 Here come the actual release notes:
 
-# metasfresh 5.19 (2017-30)
+# metasfresh 5.22 (2017-33)
 
-**upcoming release for week 2017-30**
+**upcoming release for week 2017-33**
 
 ## Features
 * metasfresh-app
-  * [#1993](https://github.com/metasfresh/metasfresh/issues/1993) Set default Widget width for certain Columns
-    * Refining and Harmonizing the Widget width of columns in GridView for those, where generic width according to their widget type does not match to the user requirement or field content. 
-  * [#1995](https://github.com/metasfresh/metasfresh/issues/1995) Language Names too Long
-    * Ranaming of Language Names, avoiding them to get too long because of Country Name. Now added the 2-digit iso country code instead.
-  * [#1996](https://github.com/metasfresh/metasfresh/issues/1996) Take out all AD_Client_ID from GridView in WebUI
-    * Rearranging GridView in general, taking out the client column from there to free space for other more important columns. Harmonizing oever all GridViews.
-  * [#2001](https://github.com/metasfresh/metasfresh/issues/2001) Add AD_Org_ID to all default Filters
-    * Including the Organisation and other fields to all generic filter selections. Removing long text fields from filters.
 
 * metasfresh-webui-api
 
@@ -36,14 +28,235 @@ Here come the actual release notes:
 
 * metasfresh-webui-frontend
 
-# metasfresh 5.18 (2017-29)
 
-**upcoming release for week 2017-29**
+# metasfresh 5.21 (2017-32)
+
+## Features
+* metasfresh-app
+  * [#1771](https://github.com/metasfresh/metasfresh/issues/1771) add legacy features
+  * [#2070](https://github.com/metasfresh/metasfresh/issues/2070) Window Design WebUI: Product
+    * Adopting the Product Window to the current Window Concept for Master Data in metasfresh WebUI
+  * [#2080](https://github.com/metasfresh/metasfresh/issues/2080) Window Design WebUI: Payment Allocation Translation en_US
+    * Adopting the Payment Allocation Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2086](https://github.com/metasfresh/metasfresh/issues/2086) Sales Order Advanced Edit Window in main View
+    * Adopting the Sales Order Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2087](https://github.com/metasfresh/metasfresh/issues/2087) Purchase Order Advanced Edit Window in main View
+    * Adopting the Purchase Order Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2096](https://github.com/metasfresh/metasfresh/issues/2096) Businesspartner B2C Location Editor missing
+    * Adjustments for the Businesspartner B2C Window, adding missing Fields and Layout.
+  * [#2101](https://github.com/metasfresh/metasfresh/issues/2101) webui - allow disabling auto-close of picking candidates
+* metasfresh-webui-api
+
+* metasfresh-webui-frontend
+  * [#977](https://github.com/metasfresh/metasfresh-webui-frontend/issues/977) Add frontend support for modifying the KPI config (caption, offset, etc)
+  * [#1051](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1051) Cut-Off Header names
+
+## Fixes
+* metasfresh-app
+  * [#2106](https://github.com/metasfresh/metasfresh/issues/2106) NullPointerException on CAMT 54 Import
+  * [#2107](https://github.com/metasfresh/metasfresh/issues/2107) Error: Missing ESR creditor reference on CAMT 54 Import
+
+* metasfresh-webui-api
+
+* metasfresh-webui-frontend
+  * [#1000](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1000) Cursor Missing after [tab] in BPartner Relation Window
+    * Fix for Focus after TAB from and into Lookup Fields.
+  * [#1006](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1006) row selection in picking
+  * [#1048](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1048) POST .../documentView/{windowId} is called twice when opening a view
+  * [#1063](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1063) view: when refreshing the page the data is loaded twice
+  * [#1077](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1077) Sitemap Navigation [arrow-up] not working
+  * [#1089](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1089) Avatar Tooltip opens and stays open after selecting Avatar Settings
+  * [#1095](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1095) Sales Order Batch Entry with Key Shortcut not working
+  * [#1099](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1099) Browse whole tree is not translated in DE
+    * New Transition of static element in WebUI Sitemap
+  * [#1098](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1098) Cant select last entry in dropdown list
+  * [#1111](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1111) Lookup Selection Lists not shown in Sequence anymore
+
+
+# metasfresh 5.20 (2017-31)
+
+**upcoming release for week 2017-31**
+
+## Features
+* metasfresh-app
+  * [#1994](https://github.com/metasfresh/metasfresh/issues/1994) Adjust Sales Invoice Window
+    * Finetuning for the Sales Invoice Window to adjust the Layout to meet our current Look And Feel concept.
+  * [#2019](https://github.com/metasfresh/metasfresh/issues/2019) Add Widget Size to System Elements
+    * New Feature in metasfresh Application Dictionary, allowing the admin to define default widget sizes per System Element.
+  * [#2029](https://github.com/metasfresh/metasfresh/issues/2029) New Window for Accounts and Elements in WebUI
+    * New Window for the maintenance of Account Elements in WebUI
+  * [#2032](https://github.com/metasfresh/metasfresh/issues/2032) Layout for Handling Unit Editor Window in WebUI
+    * Refined Layout for the Detail Views in Handling Unit Editor Window of WebUI.
+  * [#2042](https://github.com/metasfresh/metasfresh/issues/2042) Process to Update Widget Size in all child UI Elements of a System Element
+    * New Process to update all Widget Child Elements of a given System Element.
+  * [#2046](https://github.com/metasfresh/metasfresh/issues/2046) Window Design WebUI: Attribute Set
+    * Adding the refined Layout for the Attribute Set Window in WebUI.
+  * [#2049](https://github.com/metasfresh/metasfresh/issues/2049) Window Design WebUI: Purchase Order
+    * Adopting the Purchase Order Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2052](https://github.com/metasfresh/metasfresh/issues/2052) Window Design WebUI: Price System
+    * Adopting the Price System Window to the current Window Concept for Master Data in metasfresh WebUI
+  * [#2053](https://github.com/metasfresh/metasfresh/issues/2053) Window Design WebUI: Inventory Move
+    * Adopting the Inventory Move Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2058](https://github.com/metasfresh/metasfresh/issues/2058) Change AD_Table_ID Identifier to Name only
+    * Changing the Identifier for AD_Table from TableName + Name to Name only. This allows a better readability for the user.
+  * [#2066](https://github.com/metasfresh/metasfresh/issues/2066) CRM: Businesspartner B2C Reminder Functionality
+    *  New CRM Feature in Businesspartner B2C Window, allowing to set reminder Dates via Request Actions for Sales Responsible and Sales Representative.
+  * [#2067](https://github.com/metasfresh/metasfresh/issues/2067) switch between C_Order_MFGWarehouse with and without barcode
+    * New Feture that allows to switch between Warehouses in Manufacturing with and without Barcodes.
+  * [#2069](https://github.com/metasfresh/metasfresh/issues/2069) Window Design WebUI: Bill of Materials
+    * Adopting the Bill of Materials Window to the current Window Concept for Master Data in metasfresh WebUI
+  * [#2071](https://github.com/metasfresh/metasfresh/issues/2071) Window Design WebUI: Payment Window
+    * Adopting the Payment Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2074](https://github.com/metasfresh/metasfresh/issues/2074) CRM: Document List in Subtab Functionality
+  * [#2077](https://github.com/metasfresh/metasfresh/issues/2077) Window Design WebUI: Payment Allocation Window
+    * Adopting the Payment Allocation Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2083](https://github.com/metasfresh/metasfresh/issues/2083) Window Design WebUI: Customer Returns
+    * Adopting the Customer Returns Window to the current Window Concept for Documents in metasfresh WebUI
+  * [#2092](https://github.com/metasfresh/metasfresh/issues/2092) Scheduler - improve error handling if AD_Role_ID can't be found
+    * Improving the User Experience with better messages when the Scheduler fails not able to receive the User Role for running a process.
+  * [#2096](https://github.com/metasfresh/metasfresh/issues/2096) Businesspartner B2C Location Editor missing
+    * Adjustments for the Businesspartner B2C Window, adding missing Fields and Layout.
+
+* metasfresh-webui-api
+  * [#503](https://github.com/metasfresh/metasfresh-webui-api/issues/503) Picking prototype (v5)
+    * Further Improvements of the Picking API now in Version 5. Belongs to the Development of the new Picking Window in WebUI.
+  * [#514](https://github.com/metasfresh/metasfresh-webui-api/issues/514) Support HU transform from HU window
+    * Improvement od the Handling Unit Transform Action in Handling Unit Editor Window.
+  * [#518](https://github.com/metasfresh/metasfresh-webui-api/issues/518) Picking prototype (v6)
+    * Further Improvements of the Picking API now in Version 5. Belongs to the Development of the new Picking Window in WebUI.
+
+* metasfresh-webui-frontend
+  * [#982](https://github.com/metasfresh/metasfresh-webui-frontend/issues/982) Functionality to add Actions for Subtab Data
+  * [#1031](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1031) Autoselect when doubleclick on included Tab Row Field
+    * New Feature wanted heaviliy by Power Users. Now it's possible to directly edit the field content after double clicking a field in Included Tab Grid View.
+  * [#1061](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1061) Larger Avatar Menu Photo
+    * Resizing of the Avatar Image allowing to better differentiate the User Sessions on smaller Screens.
+  * [#1084](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1084) Handle websocket document stale event
+
+## Fixes
+* metasfresh-app
+
+* metasfresh-webui-api
+  * [#496](https://github.com/metasfresh/metasfresh-webui-api/issues/496) String document IDs cannot be converted to int Handling Unit Editor
+    * Fixes a Bug that occurred in Handling Unit Editor for String Document No being a String instead of an Integer.
+  * [#511](https://github.com/metasfresh/metasfresh-webui-api/issues/511) Problems with Sales Opportunities Board
+    * Fix for the Sales Opportunity Board, now removing Cards from the New Selection List that were previously added to the Board.
+  * [#516](https://github.com/metasfresh/metasfresh-webui-api/issues/516) moving 1 TU from one LU to another
+    * Fixes a refresh issue in Handling Unit Editor when transforming 1 Transport Unit to other existing Logistic Unit.
+
+* metasfresh-webui-frontend
+  * [#1026](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1026) grid: Get rid of double scrollbar
+    * Fix the double Scrollbar Issue in new Picking Window. Now only showing 1 Scrollbar when needed.
+  * [#1027](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1027) line looks selected, but it's not
+    * Fixes a minor Bug that presented a row as seleted although it wasn'nt,
+  * [#1045](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1045) frontend shall switch to offline mode on http 503 error
+    * Fix for the case that a 503 error is returned. Now the frontend switches to offline mode.
+  * [#1046](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1046) opening included view from action not working in picking
+    * Fix in Picking Window now also opening included views there too.
+  * [#1052](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1052) Breadcrumb of "Sales Opportunities" board is incorrect
+  * [#1062](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1062) Avatar Foto stretches when not Square
+    * Fix for the Avatar Photo that was presented in a stretched way when the uploaded Photo was not one with square dimensions.
+  * [#1065](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1065) Window title wrong for windows in deeper menu hierarchy
+    * Fix for the Window Name in Action Menu, that was not shown properly for Windows in deeper Menu Hierarchy.
+  * [#1067](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1067) board: add new: don't show the loading icon after data is loaded
+    * Fix for the new Board Functionality, now not showing the Loading Icon after the card data is loaded.
+  * [#1068](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1068) board: when there are no new cards show the empty result text/hint
+    * Better Transparency for the user after leaving a card selection List empty. Now showing a empty result hint to the user.
+  * [#1073](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1073) Bug in Advanced edit of Purchase order
+    * Fix for the Advanced Edit Mode in Window Purchase Order, that sometimes did not open.
+  * [#1078](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1078) Wrong quickActions call when opening HU editor
+  * [#1094](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1094) Error on document websocket event
+
+# metasfresh 5.19 (2017-30)
+
+**upcoming release for week 2017-30**
+
+## Features
+* metasfresh-app
+  * [#525](https://github.com/metasfresh/metasfresh/issues/525) Retraceability Transparency for Product Lifecycle
+    * New improved Functionality for retraceability in mtefasresh. Now allowing to analyze the material paths in no time.
+  * [#1993](https://github.com/metasfresh/metasfresh/issues/1993) Set default Widget width for certain Columns
+    * Refining and Harmonizing the Widget width of columns in GridView for those, where generic width according to their widget type does not match to the user requirement or field content.
+  * [#1995](https://github.com/metasfresh/metasfresh/issues/1995) Language Names too Long
+    * Renaming of Language Names, avoiding them to get too long because of Country Name. Now added the 2-digit iso country code instead.
+  * [#1996](https://github.com/metasfresh/metasfresh/issues/1996) Take out all AD_Client_ID from GridView in WebUI
+    * Rearranging GridView in general, taking out the client column from there to free space for other more important columns. Harmonizing oever all GridViews.
+  * [#2001](https://github.com/metasfresh/metasfresh/issues/2001) Add AD_Org_ID to all default Filters
+    * Including the Organisation and other fields to all generic filter selections. Removing long text fields from filters.
+  * [#2007](https://github.com/metasfresh/metasfresh/issues/2007) Feedback WebUI CRM
+    * Adjustments to various CRM windows. Adding missing Fields, Optimizing Column widths.
+  * [#2009](https://github.com/metasfresh/metasfresh/issues/2009) Feedback WebUI Prices
+    * Further Layout Adjustments to Pricelist and Product Price window in WebUI.
+  * [#2012](https://github.com/metasfresh/metasfresh/issues/2012) import messages
+    * New import of static massages for webUI.
+  * [#2015](https://github.com/metasfresh/metasfresh/issues/2015) Create Window Price List Schema in WebUI
+    * Adjusting the Layout for Price List Schema Window in WebUI
+  * [#2017](https://github.com/metasfresh/metasfresh/issues/2017) Create Window Pricing Rule in WebUI
+    * Adding the 2-column Layout for The Pricing Rule Window in WebUI.
+  * [#2020](https://github.com/metasfresh/metasfresh/issues/2020) Add System Configuration Window to WebUI
+    * New Window for System Configuration in WebUI.
+  * [#2022](https://github.com/metasfresh/metasfresh/issues/2022) Create Window Textvariablen in WebUI
+    * New Window for Boilerplate Variables in WebUI.
+  * [#2023](https://github.com/metasfresh/metasfresh/issues/2023) Create Window Textbausteinein WebUI
+    * New Window for Boilerplate Text Elements in WebUI.
+  * [#2027](https://github.com/metasfresh/metasfresh/issues/2027) Fine Tuning of Window Bankaccount in WebUI
+    * Various Adjustments to the Bankaccount Window in WebUI.
+  * [#2028](https://github.com/metasfresh/metasfresh/issues/2028) New Window for Validcombination in WebUI
+    * New Window in WebUI thats allows the user to maintain the valid Account Combinations.
+  * [#2038](https://github.com/metasfresh/metasfresh/issues/2038) Adjusted Business Partner Window for Small Companies
+    * New Business Partner Window for B2C Companies.
+
+* metasfresh-webui-api
+  * [#506](https://github.com/metasfresh/metasfresh-webui-api/issues/506) view: accept included referencing documents when creating a new view
+    * Providing the REST-API for referenced Documents from Zoom-To in included Tabs
+  * [#509](https://github.com/metasfresh/metasfresh-webui-api/issues/509) DocumentIdsSelection.stream() and other methods shall work with "ALL"
+    * General clarification and a fix for the concrete problem
+
+* metasfresh-webui-frontend
+  * [#999](https://github.com/metasfresh/metasfresh-webui-frontend/issues/999) grid view: use keyboard + and - to expand/collapse included rows
+    * New Feature allowing the usage of keyboard to expand/ collapse included rows in Grid Table.
+  * [#1007](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1007) eMail Icon in Action Menu
+    * Adding the eMail icon to metasfresh WebUI Action Menu.
+  * [#1029](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1029) keyboard shortcut and tooltip for button in filters
+    * New Keyboard Navigation for Apply Button in Filter selections.
+  * [#1030](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1030) Directly display quick actions for the first row of a modal window
+    * Autoselection and Quickaction activation for first row of newly opened Window in GridView.
+  * [#1038](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1038) Flickering effect in Picking Terminal
+    * Eliminating the Flickering Effect in the new Picking Terminal when navigating through the picking lines.
+
+
+## Fixes
+* metasfresh-app
+  * [#2005](https://github.com/metasfresh/metasfresh/issues/2005) invoiced and delivered status in order
+    * Updating the the invoiced and delivered Status in Orders again.
+  * [#2013](https://github.com/metasfresh/metasfresh/issues/2013) Broken Included Tabs to be redone
+    * Fixes a broken Included Tab in the Manufacturing Order Window
+
+* metasfresh-webui-api
+  * [#1982](https://github.com/metasfresh/metasfresh/issues/1982) partial issue problem
+    * Fixes an error in Action Issue of Manufacturing when patially issueing.
+
+* metasfresh-webui-frontend
+  * [#1009](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1009) Window Name missing in Action Menu
+    * Fixes a Bug not showing the Window Name in Action Menu nor the possibility to set a Bookmark for the window.
+  * [#1015](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1015) Uncaught TypeError: Cannot read property 'className' of null
+    * Fixes an issue that occured when using the scoll bar in Handling Unit Editor Window.
+  * [#1028](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1028) Tooltip when hovering GridView Header
+    * Fix for the Grid Header Tooltip, that was not shown anymore.
+  * [#1030](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1030) Directly display quick actions for the first row of a modal window
+    * Bugfix for the Quickaction behavior in modal overlay when opened and first row is initially selected.
+  * [#1040](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1040) Readonly field Contact looks editable
+    * Fix for Fields that look editable but are readonly.
+  * [#1041](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1041) included tab: when zoom into the new window opens with error
+    * Error solved when using Zoom-To in new Tab and window
+
+
+# metasfresh 5.18 (2017-29)
 
 ## Features
 * metasfresh-app
   * [#484](https://github.com/metasfresh/metasfresh/issues/484) HU traceability (backend)
-    * First Backend Implementation of the new Retraceability Functionality allowing the user to backtrack where sepecific components came from and went to.
+    * First Backend Implementation of the new Retraceability Feature allowing the user to backtrack where specific material & components came from and where went to.
   * [#1604](https://github.com/metasfresh/metasfresh/issues/1604) Enhance Material disposal (garbage)
     * Further Improvements of the Material disposal functionality.
   * [#1874](https://github.com/metasfresh/metasfresh/issues/1874) Material Receipt multiselect Close Lines
@@ -51,13 +264,13 @@ Here come the actual release notes:
   * [#1929](https://github.com/metasfresh/metasfresh/issues/1929) Translate & export webui messages
     * Migrating the latest messages for static webUI elements.
   * [#1938](https://github.com/metasfresh/metasfresh/issues/1938) Adjust Window Greeting in WebUI
-    * Adding improvements to Greeting Window in Form of 2-column Layout and Translations.
+    * Adding improvements to the Greeting Window in Form of 2-column Layout and Translations.
   * [#1939](https://github.com/metasfresh/metasfresh/issues/1939) Adjust the Business Partner Relations Window
     * New Window to allow Business Partner Relations maintenance in WebUI.
   * [#1940](https://github.com/metasfresh/metasfresh/issues/1940) Subtabs Layout for Business Partner Window
     * Refining the Business Partner Window Subtabs to Current Layout concept. Adding Translations and Renaming Fields.
   * [#1941](https://github.com/metasfresh/metasfresh/issues/1941) Subtab Layout for Window Outbound Document
-    * Adjustment of the DocOutbound Window. Layout changes for Log Subtab, adding Translations and renaming Fields.
+    * Adjustment of the Doc Outbound Window. Layout changes for Log Subtab, adding Translations and renaming Fields.
   * [#1942](https://github.com/metasfresh/metasfresh/issues/1942) Payment Terms Window in WebUI
     * Adjustment of Payment Terms Window with harmonized Layout. Adding Translations for en_US.
   * [#1943](https://github.com/metasfresh/metasfresh/issues/1943) Window Business Partner Group Advanced Edit
@@ -69,45 +282,56 @@ Here come the actual release notes:
   * [#1969](https://github.com/metasfresh/metasfresh/issues/1969) Adjustment on Average Purchase Prices Function
     * Enhancement for the Average Purchase Price Function, now returning additional Information like DocumentNo and Receiptdate if available.
   * [#1981](https://github.com/metasfresh/metasfresh/issues/1981) Add Docstatus to Grid View in Empties Receive
-    * Enhancing the presented Information in the Grid View of Empties WIndows (Return & Receive).
+    * Enhancing the presented Information in the Grid View of Empties Windows (Return & Receive).
   * [#1986](https://github.com/metasfresh/metasfresh/issues/1986) Internal Use Action for Handling Unit Editor WebUI
-    * New Action in Handling Unit Editor to allow Internal Use for Handling Units.
+    * New Action in Handling Unit Editor to allow Internal Use of Handling Units.
 
 * metasfresh-webui-api
   * [#495](https://github.com/metasfresh/metasfresh-webui-api/issues/495) API: Functionality to add Actions for Subtab Data
-    * Provides the API Endpoints for actions uses in included subtabs. Shall be made available in Frontend via action menu as soon a subtab record is selected.
+    * Provides the API Endpoints for actions used in included subtabs. Shall be made available in Frontend via action menu as soon a subtab record is selected.
   * [#501](https://github.com/metasfresh/metasfresh-webui-api/issues/501) Picking prototype (v4)
     * Next iteration of the picking terminal prototype in WebUI.
 
 * metasfresh-webui-frontend
   * [#836](https://github.com/metasfresh/metasfresh-webui-frontend/issues/836) Outbound eMail functionality
+    * First Iteration of new eMail Editor for Outbound communication in WebUI
   * [#919](https://github.com/metasfresh/metasfresh-webui-frontend/issues/919) Keyboard shortcut for Quickaction dropdown
     * New Shortcut added for the Quickaction Dropdown Menu, allowing a better keyboard navigation.
   * [#930](https://github.com/metasfresh/metasfresh-webui-frontend/issues/930) Refactor/unify Menu and Sitemap
+    * Unifying the the Navigation Menus and Sitemap components for future use and better maintainability.
   * [#942](https://github.com/metasfresh/metasfresh-webui-frontend/issues/942) grid view: automatically open the included view when clicking on a row
+    * New Fuctionality to directly open an included view when deleting a row in Grid View.
   * [#973](https://github.com/metasfresh/metasfresh-webui-frontend/issues/973) Disable/ Enable on quick actions do not happen smoothly
     * Now having a smooth transition of action button content when starting an action, avoiding a flickering effect.
   * [#992](https://github.com/metasfresh/metasfresh-webui-frontend/issues/992) Disable quick action dropdown button while running the action
+    * Improvement of the usage of Actions. When starting an action, then disabling teh action button for the time the started action is running.
 
 ## Fixes
 * metasfresh-app
   * [#1970](https://github.com/metasfresh/metasfresh/issues/1970) MatchInv not posting properly
     * Fix for MatchInv Accounting of non service Products
 
-* metasfresh-webui-api
-
 * metasfresh-webui-frontend
   * [#891](https://github.com/metasfresh/metasfresh-webui-frontend/issues/891) Blocked cells
+    * Improvement of metasfresh Browser compatibility. Here adjusting the behavior of blocked cells when using Edge Browser.
   * [#948](https://github.com/metasfresh/metasfresh-webui-frontend/issues/948) Define refactoring plan for filters model
+    * Improvement of Filtering model in metasfresh.
   * [#966](https://github.com/metasfresh/metasfresh-webui-frontend/issues/966) sitemap: menu item incorrectly flagged as favorite in search result
+    * Fix for the User Bookmark menu, fixing a minor case that showed the a menu item incorrectly as favorite.
   * [#978](https://github.com/metasfresh/metasfresh-webui-frontend/issues/978) Make Avatar and Notifications accessible in Edit mode
+    * Fixes the Avatar and Notifications menu in action windows line Picking Terminal and others.
   * [#979](https://github.com/metasfresh/metasfresh-webui-frontend/issues/979) Use the Provided Endpoint w/ entry selections for given Breadcrumb
+    * Refactoring/ Fixing the Breadcrumb menu usage.
   * [#987](https://github.com/metasfresh/metasfresh-webui-frontend/issues/987) Blue Border in modal overlay when Button pressed
     * Fixes a Stylesheet Issue that caused a blue border around Buttons and Tooltips when hovering.
   * [#998](https://github.com/metasfresh/metasfresh-webui-frontend/issues/998) Picking: quick actions button not shown
+    * Fix for the Action Buttons in new Picking Terminal Window, that were not displayed.
   * [#1008](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1008) Breadcrumb Navigation broken for Document List
+    * Fix for the breadcrumb menu that was not shown anymore in Document List.
   * [#1010](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1010) Action menu Window Name
+    * Now showing the Window Name in the Action Menu dropdown List again.
   * [#1011](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1011) Checking/ unchecking flags in included tabs lead to errors in console
+    * Housekeeping Issue, now eliminating console errors that popped up when checking/ unchecking flags.
 
 # metasfresh 5.17 (2017-28)
 
