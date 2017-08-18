@@ -10,30 +10,56 @@ Additional notes:
 
 Here come the actual release notes:
 
+# metasfresh 5.23 (2017-34)
+
+**upcoming release for week 2017-34**
+
 # metasfresh 5.22 (2017-33)
 
-**upcoming release for week 2017-33**
+**release for week 2017-33**
 
 ## Features
 * metasfresh-app
+  * [#2110](https://github.com/metasfresh/metasfresh/issues/2110) make version/build infos more transparent
+    * Adding the build/ version infos of the metasfresh applications to spring admin and to file build-info.properties (in dist folder), allowing to have a better overview about the configuration.
+  * [#2111](https://github.com/metasfresh/metasfresh/issues/2111) Store version number in DB after successful sql remote
+    * Nice improvement of sql remote. Now storning the version number in Database and avoiding unneccesary invocations of sql remote, which speeds up the db migration process a lot.
+  * [#2118](https://github.com/metasfresh/metasfresh/issues/2118) ESR - add sysconfig to ignore non-credit lines
+    * Improvement of the ESR Import action, now processing all ESR Lines also when individual Lines fail.
+  * [#2119](https://github.com/metasfresh/metasfresh/issues/2119) ESR - Show actual number of transactions
+    * Adding a Transaction control amount to ESR Imports coming from SEPA camt.54 file and presenting to the user.
 
 * metasfresh-webui-api
 
 * metasfresh-webui-frontend
+  * [#1117](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1117) Cut-Off Header Names in Subtabs
+    * Adjusting the Header Names of Grid View Columns in included Subtabs. Now adding elipses when Header Names are too long. Via Hover the user is able to read the Full Name via Tooltip.
+  * [#1127](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1127) Allow copy to clipboard of selected grid lines
 
 ## Fixes
 * metasfresh-app
+  * [#2121](https://github.com/metasfresh/metasfresh/issues/2121) cant save purchase order
+    * Fixes a minor Bug that occured in Purchase Order under certain circumstances, avoiding the record save.
 
 * metasfresh-webui-api
 
 * metasfresh-webui-frontend
+  * [#1066](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1066) board: when adding a new card, the card does not vanish from new cards view
+    * Fix for the new Kanban Board. Now the cards are removed from card selection List, as soon as they are dragged & dropped on the Board.
+  * [#1121](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1121) Fix localization of missing phrases related to attachment upload
+  * [#1124](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1124) issue in manufacturing won't close
 
+* others
+  * [metasfresh/metasfresh-dist-orgs#17](https://github.com/metasfresh/metasfresh-dist-orgs/issues/17) activate role webui
 
 # metasfresh 5.21 (2017-32)
+
+**release for week 2017-32**
 
 ## Features
 * metasfresh-app
   * [#1771](https://github.com/metasfresh/metasfresh/issues/1771) add legacy features
+    * Adding missing features from legacy systems to current metasfresh codebase.
   * [#2070](https://github.com/metasfresh/metasfresh/issues/2070) Window Design WebUI: Product
     * Adopting the Product Window to the current Window Concept for Master Data in metasfresh WebUI
   * [#2080](https://github.com/metasfresh/metasfresh/issues/2080) Window Design WebUI: Payment Allocation Translation en_US
@@ -45,37 +71,46 @@ Here come the actual release notes:
   * [#2096](https://github.com/metasfresh/metasfresh/issues/2096) Businesspartner B2C Location Editor missing
     * Adjustments for the Businesspartner B2C Window, adding missing Fields and Layout.
   * [#2101](https://github.com/metasfresh/metasfresh/issues/2101) webui - allow disabling auto-close of picking candidates
-* metasfresh-webui-api
+    * New Switch to influence the closing behavior of picking candidates.
 
 * metasfresh-webui-frontend
   * [#977](https://github.com/metasfresh/metasfresh-webui-frontend/issues/977) Add frontend support for modifying the KPI config (caption, offset, etc)
+    * New Functionality allowing the user to adjust KPI Settings via Frontend.
   * [#1051](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1051) Cut-Off Header names
+    * Adjusting the Header Names of Grid View Columns. Now adding elipses when Header Names are too long. Via Hover the user is able to read the Full Name via Tooltip.
+  * [#1097](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1097) Show progress when uploading big files
 
 ## Fixes
 * metasfresh-app
   * [#2106](https://github.com/metasfresh/metasfresh/issues/2106) NullPointerException on CAMT 54 Import
+    * Fixes a NPE Bug that happened in minror cases when importing a camt54 sepa file.
   * [#2107](https://github.com/metasfresh/metasfresh/issues/2107) Error: Missing ESR creditor reference on CAMT 54 Import
-
-* metasfresh-webui-api
+    * Fixes a Bug in new camt54 import which failed because mandatory ESR Reference Field is missing in sepa file.
 
 * metasfresh-webui-frontend
   * [#1000](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1000) Cursor Missing after [tab] in BPartner Relation Window
     * Fix for Focus after TAB from and into Lookup Fields.
   * [#1006](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1006) row selection in picking
+    * When opening the picking window intitially in Grid Veiw the first Row is now selected.
   * [#1048](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1048) POST .../documentView/{windowId} is called twice when opening a view
+    * Now Minimizing the amount of calls for documentView/{windowId} endpoint, which improves the performance of the overall System.
   * [#1063](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1063) view: when refreshing the page the data is loaded twice
+    * Reducing the load of data after refreshing a page improving the load times of views.
   * [#1077](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1077) Sitemap Navigation [arrow-up] not working
+    * Fixes a Bug in the Keyboard Navigation in Sitemap. Now allowing the user to use the arrow-up key again.
   * [#1089](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1089) Avatar Tooltip opens and stays open after selecting Avatar Settings
+    * Fixes a Bug in Avatr Tooltip which remained open after selecting the avatar Settings.
   * [#1095](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1095) Sales Order Batch Entry with Key Shortcut not working
+    * Fix for Keyborad Navigation Shortcut starting the Batch Entry in Document Views (where available).
   * [#1099](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1099) Browse whole tree is not translated in DE
-    * New Transition of static element in WebUI Sitemap
+    * New Transition of static element in WebUI Sitemap.
   * [#1098](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1098) Cant select last entry in dropdown list
+    * Fix for Selection Lists, now allowing to also select the last entry of a List.
   * [#1111](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1111) Lookup Selection Lists not shown in Sequence anymore
-
+    * Fixes a Bug in Lookup Fields now showing the wanted selection List sequence when defining included Fields in a Lookup.
+  * [#1114](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1114) caught in an empties loop when opened from material receipt candidates
 
 # metasfresh 5.20 (2017-31)
-
-**upcoming release for week 2017-31**
 
 ## Features
 * metasfresh-app
@@ -108,6 +143,7 @@ Here come the actual release notes:
   * [#2071](https://github.com/metasfresh/metasfresh/issues/2071) Window Design WebUI: Payment Window
     * Adopting the Payment Window to the current Window Concept for Documents in metasfresh WebUI
   * [#2074](https://github.com/metasfresh/metasfresh/issues/2074) CRM: Document List in Subtab Functionality
+    * New Feature in the Businesspartner B2C Window. Including a new Included Tab, Data Structure and Functionality for CRM Documents.
   * [#2077](https://github.com/metasfresh/metasfresh/issues/2077) Window Design WebUI: Payment Allocation Window
     * Adopting the Payment Allocation Window to the current Window Concept for Documents in metasfresh WebUI
   * [#2083](https://github.com/metasfresh/metasfresh/issues/2083) Window Design WebUI: Customer Returns
@@ -127,11 +163,13 @@ Here come the actual release notes:
 
 * metasfresh-webui-frontend
   * [#982](https://github.com/metasfresh/metasfresh-webui-frontend/issues/982) Functionality to add Actions for Subtab Data
+    * New Functionality now allowing to also define actions to included subtabs and use them via Action Menu.
   * [#1031](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1031) Autoselect when doubleclick on included Tab Row Field
     * New Feature wanted heaviliy by Power Users. Now it's possible to directly edit the field content after double clicking a field in Included Tab Grid View.
   * [#1061](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1061) Larger Avatar Menu Photo
     * Resizing of the Avatar Image allowing to better differentiate the User Sessions on smaller Screens.
   * [#1084](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1084) Handle websocket document stale event
+    * New internal Functionality to only refresh a Document without all included Tabs when needed. This avoids the reload of mass data although nothing has changed in Subdata.
 
 ## Fixes
 * metasfresh-app
@@ -148,12 +186,13 @@ Here come the actual release notes:
   * [#1026](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1026) grid: Get rid of double scrollbar
     * Fix the double Scrollbar Issue in new Picking Window. Now only showing 1 Scrollbar when needed.
   * [#1027](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1027) line looks selected, but it's not
-    * Fixes a minor Bug that presented a row as seleted although it wasn'nt,
+    * Fixes a minor Bug that presented a row as seleted although it wasn't.
   * [#1045](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1045) frontend shall switch to offline mode on http 503 error
     * Fix for the case that a 503 error is returned. Now the frontend switches to offline mode.
   * [#1046](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1046) opening included view from action not working in picking
     * Fix in Picking Window now also opening included views there too.
   * [#1052](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1052) Breadcrumb of "Sales Opportunities" board is incorrect
+    * Fixes the Breadcrumb menu in Windows that are in 2nd level hierarchy in menu tree.
   * [#1062](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1062) Avatar Foto stretches when not Square
     * Fix for the Avatar Photo that was presented in a stretched way when the uploaded Photo was not one with square dimensions.
   * [#1065](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1065) Window title wrong for windows in deeper menu hierarchy
@@ -165,11 +204,11 @@ Here come the actual release notes:
   * [#1073](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1073) Bug in Advanced edit of Purchase order
     * Fix for the Advanced Edit Mode in Window Purchase Order, that sometimes did not open.
   * [#1078](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1078) Wrong quickActions call when opening HU editor
+    * Fix for action calls when opening the Handling Unit Editor initially.
   * [#1094](https://github.com/metasfresh/metasfresh-webui-frontend/issues/1094) Error on document websocket event
+    * Fix for a minor error on document websocket events.
 
 # metasfresh 5.19 (2017-30)
-
-**upcoming release for week 2017-30**
 
 ## Features
 * metasfresh-app

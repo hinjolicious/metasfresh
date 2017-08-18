@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.Nullable;
 import javax.xml.bind.JAXB;
@@ -94,19 +93,13 @@ import lombok.NonNull;
  */
 public class ESRDataImporterCamt54 implements IESRDataImporter
 {
+	@VisibleForTesting
+	static final BigDecimal CTRL_QTY_AT_LEAST_ONE_NULL = BigDecimal.ONE.negate();
 
 	@VisibleForTesting
-	static final String MSG_AMBIGOUS_REFERENCE = "ESR_CAMT54_Ambigous_Reference";
-
-	@VisibleForTesting
-	static final String MSG_MISSING_ESR_REFERENCE = "ESR_CAMT54_Missing_ESR_Reference";
+	static final BigDecimal CTRL_QTY_NOT_YET_SET = BigDecimal.TEN.negate();
 
 	private static final String MSG_UNSUPPORTED_CREDIT_DEBIT_CODE_1P = "ESR_CAMT54_UnsupportedCreditDebitCode";
-
-	/**
-	 * This constant is used as value in {@code /BkToCstmrDbtCdtNtfctn/Ntfctn/Ntry/NtryDtls/TxDtls/RmtInf/Strd/CdtrRefInf/Tp/CdOrPrtry/Prtry} to indicate that the references given in {@code CdtrRefInf} is an ESR number.
-	 */
-	private static final String ISR_REFERENCE = "ISR Reference";
 
 	private static final String MSG_BANK_ACCOUNT_MISMATCH_2P = "ESR_CAMT54_BankAccountMismatch";
 
@@ -119,6 +112,16 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 	{
 		this.input = input;
 		this.header = header;
+	}
+
+	/**
+	 * Constructor only to unit test particular methods. Wont't work in production.
+	 */
+	@VisibleForTesting
+	ESRDataImporterCamt54()
+	{
+		this.input = null;
+		this.header = null;
 	}
 
 	@Override
@@ -142,20 +145,28 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 		final ESRStatementBuilder stmtBuilder = ESRStatement.builder();
 
 		BigDecimal ctrAmount = BigDecimal.ZERO;
-		BigDecimal ctrlQty = null; // start with null (not zero) because in the camt.54 file there just might be no information provided at all
+
+		BigDecimal ctrlQty = CTRL_QTY_NOT_YET_SET;
 
 		for (final AccountNotification12 ntfctn : bkToCstmrDbtCdtNtfctn.getNtfctn())
 		{
 			for (final ReportEntry8 ntry : ntfctn.getNtry()) // gh #1947: there can be many ntry records
 			{
-				ctrAmount = ctrAmount.add(ntry.getAmt().getValue());
-				ctrlQty = iterateEntryDetails(stmtBuilder, ctrlQty, ntry);
+				final BigDecimal ntryAmt = ntry.getAmt().getValue()
+						.multiply(getCrdDbtMultiplier(ntry.getCdtDbtInd()))
+						.multiply(getRvslMultiplier(ntry));
 
+				ctrAmount = ctrAmount.add(ntryAmt);
+				ctrlQty = iterateEntryDetails(stmtBuilder, ctrlQty, ntry);
 			} // for ntry
 		} // ntfctn
+
+		// only use the control qty if all ntry had one set. If one was null, then forward null
+		final BigDecimal ctrlQtyForStatement = ctrlQty.compareTo(CTRL_QTY_AT_LEAST_ONE_NULL) == 0 ? null : ctrlQty;
+
 		return stmtBuilder
 				.ctrlAmount(ctrAmount)
-				.ctrlQty(ctrlQty)
+				.ctrlQty(ctrlQtyForStatement)
 				.build();
 	}
 
@@ -166,7 +177,8 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 	 * @param ntry
 	 * @return the given {@code ctrlQty}, plus the <code>NbOfTxs</code> of the given {@code ntry}'s {@code ntryDtl}s (if any).
 	 */
-	private BigDecimal iterateEntryDetails(
+	@VisibleForTesting
+	BigDecimal iterateEntryDetails(
 			@NonNull final ESRStatementBuilder stmtBuilder,
 			@Nullable final BigDecimal ctrlQty,
 			@NonNull final ReportEntry8 ntry)
@@ -174,10 +186,24 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 		BigDecimal newCtrlQty = ctrlQty;
 		for (final EntryDetails7 ntryDtl : ntry.getNtryDtls())
 		{
-			if (ntryDtl.getBtch() != null && ntryDtl.getBtch().getNbOfTxs() != null)
+			if (ctrlQty.compareTo(CTRL_QTY_AT_LEAST_ONE_NULL) == 0
+					|| ntryDtl.getBtch() == null || ntryDtl.getBtch().getNbOfTxs() == null)
+			{
+				// the current ntryDtl has no control qty, or an earlier one already didn't have a control qty
+				newCtrlQty = CTRL_QTY_AT_LEAST_ONE_NULL;
+			}
+			else
 			{
 				final BigDecimal augend = new BigDecimal(ntryDtl.getBtch().getNbOfTxs());
-				newCtrlQty = (newCtrlQty == null) ? augend : newCtrlQty.add(augend);
+				if (ctrlQty.compareTo(CTRL_QTY_NOT_YET_SET) == 0)
+				{
+					// not yet set
+					newCtrlQty = augend;
+				}
+				else
+				{
+					newCtrlQty = newCtrlQty.add(augend);
+				}
 			}
 
 			final List<ESRTransaction> transactions = iterateTransactionDetails(ntry, ntryDtl);
@@ -192,23 +218,23 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 			@NonNull final ReportEntry8 ntry,
 			@NonNull final EntryDetails7 ntryDtl)
 	{
-		List<ESRTransaction> transactions = new ArrayList<>();
+		final List<ESRTransaction> transactions = new ArrayList<>();
 
-		for (final EntryTransaction8 txDtls : ntryDtl.getTxDtls())
+		for (final EntryTransaction8 txDtl : ntryDtl.getTxDtls())
 		{
 			final ESRTransactionBuilder trxBuilder = ESRTransaction.builder();
 
-			extractAndSetEsrReference(txDtls, trxBuilder);
+			new ReferenceStringHelper().extractAndSetEsrReference(txDtl, trxBuilder);
 
-			verifyTransactionCurrency(txDtls, trxBuilder);
+			verifyTransactionCurrency(txDtl, trxBuilder);
 
-			extractAmountAndType(ntry, txDtls, trxBuilder);
+			extractAmountAndType(ntry, txDtl, trxBuilder);
 
 			final ESRTransaction esrTransaction = trxBuilder
 					.accountingDate(asTimestamp(ntry.getBookgDt()))
 					.paymentDate(asTimestamp(ntry.getValDt()))
 					.esrParticipantNo(ntry.getNtryRef())
-					.transactionKey(mkTrxKey(txDtls))
+					.transactionKey(mkTrxKey(txDtl))
 					.build();
 			transactions.add(esrTransaction);
 		}
@@ -220,33 +246,56 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 			@NonNull final EntryTransaction8 txDtls,
 			@NonNull final ESRTransactionBuilder trxBuilder)
 	{
-
 		// credit-or-debit indicator
+
+		final ActiveOrHistoricCurrencyAndAmount transactionDetailAmt = txDtls.getAmt();
+
+		final BigDecimal amount = transactionDetailAmt.getValue()
+				.multiply(getCrdDbtMultiplier(txDtls.getCdtDbtInd()))
+				.multiply(getRvslMultiplier(ntry));
+		trxBuilder.amount(amount);
+
 		if (txDtls.getCdtDbtInd() == CreditDebitCode.CRDT)
 		{
-			final ActiveOrHistoricCurrencyAndAmount transactionDetailAmt = txDtls.getAmt();
-			if (ntry.isRvslInd() != null && ntry.isRvslInd())
+			if (isReversal(ntry))
 			{
-				trxBuilder
-						.trxType(ESRConstants.ESRTRXTYPE_ReverseBooking)
-						.amount(transactionDetailAmt.getValue().negate());
+				trxBuilder.trxType(ESRConstants.ESRTRXTYPE_ReverseBooking);
 			}
 			else
 			{
-				trxBuilder
-						.trxType(ESRConstants.ESRTRXTYPE_CreditMemo)
-						.amount(transactionDetailAmt.getValue());
+				trxBuilder.trxType(ESRConstants.ESRTRXTYPE_CreditMemo);
 			}
 		}
 		else
 		{
 			// we get charged; currently not supported
 			final IMsgBL msgBL = Services.get(IMsgBL.class);
-			trxBuilder
-					.errorMsg(msgBL.getMsg(Env.getCtx(), MSG_UNSUPPORTED_CREDIT_DEBIT_CODE_1P, new Object[] { ntry.getCdtDbtInd() }))
-					.trxType("???")
-					.amount(null);
+			trxBuilder.trxType(ESRConstants.ESRTRXTYPE_UNKNOWN)
+					.errorMsg(msgBL.getMsg(Env.getCtx(), MSG_UNSUPPORTED_CREDIT_DEBIT_CODE_1P, new Object[] { ntry.getCdtDbtInd() }));
 		}
+	}
+
+	private BigDecimal getCrdDbtMultiplier(@NonNull final CreditDebitCode creditDebitCode)
+	{
+		if (creditDebitCode == CreditDebitCode.CRDT)
+		{
+			return BigDecimal.ONE;
+		}
+		return BigDecimal.ONE.negate();
+	}
+
+	private BigDecimal getRvslMultiplier(@NonNull final ReportEntry8 ntry)
+	{
+		if (isReversal(ntry))
+		{
+			return BigDecimal.ONE.negate();
+		}
+		return BigDecimal.ONE;
+	}
+
+	private boolean isReversal(@NonNull final ReportEntry8 ntry)
+	{
+		return ntry.isRvslInd() != null && ntry.isRvslInd();
 	}
 
 	/**
@@ -274,77 +323,6 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 			trxBuilder.errorMsg(msgBL.getMsg(Env.getCtx(), MSG_BANK_ACCOUNT_MISMATCH_2P,
 					new Object[] { headerCurrencyISO, transactionDetailAmt.getCcy() }));
 		}
-	}
-
-	private void extractAndSetEsrReference(
-			@NonNull final EntryTransaction8 txDtls,
-			@NonNull final ESRTransactionBuilder trxBuilder)
-	{
-		final IMsgBL msgBL = Services.get(IMsgBL.class);
-
-		final Optional<String> esrReferenceNumberString = extractEsrReference(txDtls);
-		if (esrReferenceNumberString.isPresent())
-		{
-			trxBuilder.esrReferenceNumber(esrReferenceNumberString.get());
-		}
-		else
-		{
-			final Optional<String> fallback = extractReferenceFallback(txDtls);
-			if (fallback.isPresent())
-			{
-				trxBuilder.esrReferenceNumber(fallback.get());
-				trxBuilder.errorMsg(msgBL.getMsg(Env.getCtx(), MSG_AMBIGOUS_REFERENCE));
-			}
-			else
-			{
-				trxBuilder.errorMsg(msgBL.getMsg(Env.getCtx(), MSG_MISSING_ESR_REFERENCE));
-			}
-		}
-	}
-
-	/**
-	 * Gets <code>TxDtls/RmtInf/Strd/CdtrRefInf/Ref</code><br>
-	 * from a <code>CdtrRefInf</code> element<br>
-	 * that has <code>CdtrRefInf/Tp/CdOrPrtry == "ISR Reference"</code>.
-	 * 
-	 * @param txDtls
-	 * @return
-	 * 
-	 * @task https://github.com/metasfresh/metasfresh/issues/2107
-	 */
-	private Optional<String> extractEsrReference(@NonNull final EntryTransaction8 txDtls)
-	{
-		// get the esr reference string out of the XML tree
-		final Optional<String> esrReferenceNumberString = txDtls.getRmtInf().getStrd().stream()
-				.map(strd -> strd.getCdtrRefInf())
-
-				// it's stored in the cdtrRefInf records whose cdtrRefInf/tp/cdOrPrtry/prtr equals to ISR_REFERENCE
-				.filter(cdtrRefInf -> cdtrRefInf != null
-						&& cdtrRefInf.getTp() != null
-						&& cdtrRefInf.getTp().getCdOrPrtry() != null
-						&& cdtrRefInf.getTp().getCdOrPrtry().getPrtry().equals(ISR_REFERENCE))
-
-				.map(cdtrRefInf -> cdtrRefInf.getRef())
-				.findFirst();
-		return esrReferenceNumberString;
-	}
-
-	/**
-	 * 
-	 * @param txDtls
-	 * @return
-	 * 
-	 * @task https://github.com/metasfresh/metasfresh/issues/2107
-	 */
-	private Optional<String> extractReferenceFallback(@NonNull final EntryTransaction8 txDtls)
-	{
-		// get the esr reference string out of the XML tree
-		final Optional<String> esrReferenceNumberString = txDtls.getRmtInf().getStrd().stream()
-				.map(strd -> strd.getCdtrRefInf())
-				.filter(cdtrRefInf -> cdtrRefInf != null)
-				.map(cdtrRefInf -> cdtrRefInf.getRef())
-				.findFirst();
-		return esrReferenceNumberString;
 	}
 
 	private BankToCustomerDebitCreditNotificationV06 loadXML()
@@ -410,10 +388,16 @@ public class ESRDataImporterCamt54 implements IESRDataImporter
 
 	}
 
-	private String mkTrxKey(@NonNull final EntryTransaction8 txDtls)
+	/**
+	 * Marshals the given {@code} into an XML string and return that as the "key".
+	 * 
+	 * @param txDtl
+	 * @return
+	 */
+	private String mkTrxKey(@NonNull final EntryTransaction8 txDtl)
 	{
 		final ByteArrayOutputStream transactionKey = new ByteArrayOutputStream();
-		JAXB.marshal(txDtls, transactionKey);
+		JAXB.marshal(txDtl, transactionKey);
 		try
 		{
 			return transactionKey.toString("UTF-8");
