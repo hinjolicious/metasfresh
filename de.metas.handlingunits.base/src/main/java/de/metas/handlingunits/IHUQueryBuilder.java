@@ -113,7 +113,7 @@ public interface IHUQueryBuilder
 	<T> List<T> collect(ModelColumn<I_M_HU, T> huColumn);
 
 	/**
-	 * Sets the context in which the query will run.
+	 * Set the context in which the query will run. Optional, see {@link #setContext(Object)}.
 	 *
 	 * @param ctx
 	 * @param trxName
@@ -122,9 +122,10 @@ public interface IHUQueryBuilder
 	IHUQueryBuilder setContext(final Properties ctx, final String trxName);
 
 	/**
-	 * Sets the context in which the query will run.
+	 * Optionally set the context in which the query will run.<br>
+	 * If omitted, then then {@link org.adempiere.model.PlainContextAware#newWithThreadInheritedTrx()} is used.
 	 *
-	 * @param contextProvider
+	 * @param contextProvider an instance that can be used as parameter for {@link org.adempiere.model.InterfaceWrapperHelper#getContextAware(Object)}.
 	 * @return this
 	 */
 	IHUQueryBuilder setContext(final Object contextProvider);
@@ -273,6 +274,14 @@ public interface IHUQueryBuilder
 	IHUQueryBuilder setM_HU_Parent_ID(final int parentHUId);
 
 	/**
+	 * If <code>true</code> then only active HUs will be matched (i.e. IsActive='Y').
+	 * By default this is true.
+	 * 
+	 * @param onlyActiveHUs
+	 */
+	IHUQueryBuilder setOnlyActiveHUs(boolean onlyActiveHUs);
+
+	/**
 	 * Sets HU's HUStatus to be matched.
 	 *
 	 * If <code>null</code> then all HU statuses are matched.
@@ -364,9 +373,9 @@ public interface IHUQueryBuilder
 
 	/**
 	 * Filter the HUs by barcode.
-	 * HU identification by barcode can be either of the 2 below: 
+	 * HU identification by barcode can be either of the 2 below:
 	 * <li>the M_HU.Value equals the inserted barcode (like before)</li>
-	 * <li>the HU has a linked M_HU_Attribute entry with M_Attribute of type Barcode (defined in the DIM_Barcode_Attributes dimension spec) and with the value that equals the inserted barcode</li> 
+	 * <li>the HU has a linked M_HU_Attribute entry with M_Attribute of type Barcode (defined in the DIM_Barcode_Attributes dimension spec) and with the value that equals the inserted barcode</li>
 	 *
 	 * @param barcode
 	 * @return this
@@ -434,7 +443,7 @@ public interface IHUQueryBuilder
 	/**
 	 * Adds HUs which shall be selected. No other HUs, beside those ones will be considered.
 	 *
-	 * If the given list is empty, this method will do nothing.
+	 * If the given list {@code null} this method will do nothing. If it is empty, no HUs will be considered.
 	 *
 	 * @param onlyHUIds
 	 */
