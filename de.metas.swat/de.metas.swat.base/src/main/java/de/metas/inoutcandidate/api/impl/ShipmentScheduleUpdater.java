@@ -32,7 +32,7 @@ import org.adempiere.util.Check;
 import org.adempiere.util.Services;
 import org.slf4j.Logger;
 
-import de.metas.inoutcandidate.api.IInOutCandHandlerBL;
+import de.metas.inoutcandidate.api.IShipmentScheduleHandlerBL;
 import de.metas.inoutcandidate.api.IShipmentScheduleBL;
 import de.metas.inoutcandidate.api.IShipmentSchedulePA;
 import de.metas.inoutcandidate.api.IShipmentScheduleUpdater;
@@ -43,11 +43,11 @@ import de.metas.logging.LogManager;
 public class ShipmentScheduleUpdater implements IShipmentScheduleUpdater
 {
 	/**
-	 * Flag which is set to true when shipment schedule updater is runing.
+	 * Flag which is set to true when shipment schedule updater is running.
 	 * 
 	 * This information is stored on thread level.
 	 */
-	final InheritableThreadLocal<Boolean> running = new InheritableThreadLocal<Boolean>();
+	private final InheritableThreadLocal<Boolean> running = new InheritableThreadLocal<Boolean>();
 
 	private static final Logger logger = LogManager.getLogger(ShipmentScheduleUpdater.class);
 
@@ -77,7 +77,7 @@ public class ShipmentScheduleUpdater implements IShipmentScheduleUpdater
 			{
 				//
 				// Create and invalidate missing shipment schedules
-				final List<I_M_ShipmentSchedule> shipmentSchedulesNew = Services.get(IInOutCandHandlerBL.class).createMissingCandidates(ctx, trxName);
+				final List<I_M_ShipmentSchedule> shipmentSchedulesNew = Services.get(IShipmentScheduleHandlerBL.class).createMissingCandidates(ctx, trxName);
 				shipmentSchedulePA.invalidate(shipmentSchedulesNew, trxName);
 			}
 

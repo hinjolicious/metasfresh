@@ -108,7 +108,7 @@ public class M_ShipmentSchedule
 	public void createEffectiveValues(final I_M_ShipmentSchedule shipmentSchedule)
 	{
 		// create the effective values (calculated, override)
-		Services.get(IHUShipmentScheduleBL.class).createEffectiveValues(shipmentSchedule);
+		Services.get(IHUShipmentScheduleBL.class).updateHURelatedValuesFromOrderLine(shipmentSchedule);
 	}
 
 	@ModelChange(
@@ -166,7 +166,7 @@ public class M_ShipmentSchedule
 		// update orderLine
 
 		// task 09005: make sure the correct qtyOrdered is taken from the shipmentSchedule
-		final BigDecimal qtyOrderedEffective = Services.get(IShipmentScheduleEffectiveBL.class).getQtyOrdered(shipmentSchedule);
+		final BigDecimal qtyOrderedEffective = Services.get(IShipmentScheduleEffectiveBL.class).computeQtyOrdered(shipmentSchedule);
 		orderLine.setQtyOrdered(qtyOrderedEffective);
 
 		InterfaceWrapperHelper.save(orderLine);

@@ -60,7 +60,7 @@ import org.compiere.model.X_M_InOut;
 import org.slf4j.Logger;
 
 import de.metas.document.IDocTypeDAO;
-import de.metas.document.engine.IDocActionBL;
+import de.metas.document.engine.IDocumentBL;
 import de.metas.handlingunits.IHUContextFactory;
 import de.metas.handlingunits.IHUShipperTransportationBL;
 import de.metas.handlingunits.IHandlingUnitsBL;
@@ -93,6 +93,7 @@ import de.metas.inoutcandidate.api.InOutGenerateResult;
 import de.metas.inoutcandidate.api.impl.HUShipmentScheduleHeaderAggregationKeyBuilder;
 import de.metas.logging.LogManager;
 import de.metas.shipping.model.I_M_ShipperTransportation;
+import lombok.NonNull;
 
 public class HUShipmentScheduleBL implements IHUShipmentScheduleBL
 {
@@ -163,8 +164,6 @@ public class HUShipmentScheduleBL implements IHUShipmentScheduleBL
 		// update HU from sched
 		setHUPartnerAndLocationFromSched(sched, tuHU);
 
-		
-		
 		handlingUnitsDAO.saveHU(tuHU);
 
 		return schedQtyPickedHU;
@@ -580,7 +579,7 @@ public class HUShipmentScheduleBL implements IHUShipmentScheduleBL
 				// Only sum up the qtys from inout lines that belong to completed inouts
 				final org.compiere.model.I_M_InOut io = iol.getM_InOut();
 
-				if (Services.get(IDocActionBL.class).isDocumentCompleted(io))
+				if (Services.get(IDocumentBL.class).isDocumentCompleted(io))
 				{
 					seenIOIds.add(io.getM_InOut_ID());
 					iolTuQtySum = iolTuQtySum.add(iol.getQtyEnteredTU());
@@ -792,24 +791,35 @@ public class HUShipmentScheduleBL implements IHUShipmentScheduleBL
 	}
 
 	@Override
-	public void createEffectiveValues(final I_M_ShipmentSchedule shipmentSchedule)
+	public void updateHURelatedValuesFromOrderLine(@NonNull final I_M_ShipmentSchedule shipmentSchedule)
+	{
+		if (shipmentSchedule.getC_OrderLine_ID() > 0)
+		{
+			updatePackingInstructionsFromOrderLine(shipmentSchedule);
+			updateTuQuantitiesFromOrderLine(shipmentSchedule);
+		}
+	}
+
+	private void updateTuQuantitiesFromOrderLine(@NonNull final I_M_ShipmentSchedule shipmentSchedule)
+	{
+		final I_C_OrderLine orderLine = InterfaceWrapperHelper.create(shipmentSchedule.getC_OrderLine(), I_C_OrderLine.class);
+		final BigDecimal qtyTU = orderLine.getQtyEnteredTU();
+		final BigDecimal qtyTU_Effective = qtyTU;
+
+		shipmentSchedule.setQtyTU_Calculated(qtyTU_Effective);
+		shipmentSchedule.setQtyOrdered_TU(qtyTU_Effective);
+		shipmentSchedule.setQtyTU_Override(qtyTU_Effective);
+	}
+
+	private void updatePackingInstructionsFromOrderLine(@NonNull final I_M_ShipmentSchedule shipmentSchedule)
 	{
 		final I_C_OrderLine orderLine = InterfaceWrapperHelper.create(shipmentSchedule.getC_OrderLine(), I_C_OrderLine.class);
 
 		final I_M_HU_PI_Item_Product hupip = orderLine.getM_HU_PI_Item_Product();
-		final BigDecimal qtyTU = orderLine.getQtyEnteredTU();
-
-		final BigDecimal qtyTU_Effective = qtyTU;
 		final I_M_HU_PI_Item_Product piItemProduct_Effective = hupip;
 
-		// M_HU_PI_Item_product
 		shipmentSchedule.setM_HU_PI_Item_Product_Calculated(piItemProduct_Effective);
 		shipmentSchedule.setM_HU_PI_Item_Product(piItemProduct_Effective);
 		shipmentSchedule.setM_HU_PI_Item_Product_Override(piItemProduct_Effective);
-
-		// TU
-		shipmentSchedule.setQtyTU_Calculated(qtyTU_Effective);
-		shipmentSchedule.setQtyOrdered_TU(qtyTU_Effective);
-		shipmentSchedule.setQtyTU_Override(qtyTU_Effective);
 	}
 }
